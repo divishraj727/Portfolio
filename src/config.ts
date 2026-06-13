@@ -44,7 +44,7 @@ export const KEYWORDS = [
 ];
 
 // ── Hero badges (compact row under the tagline) ─────────────
-export const HERO_BADGES = ["Python", "React", "AWS", "DSA", "DB", "AI", "LLMs", "Claude", "Gemini"];
+export const HERO_BADGES = ["Python", "React", "AWS", "DSA", "DB", "AI", "LLMs", "Machine Learning"];
 
 // ── Tech stack (grouped), from résumé ──────────────────────
 export const SKILLS: { group: string; items: string[] }[] = [
