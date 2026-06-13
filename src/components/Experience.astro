@@ -42,13 +42,45 @@ import { EXPERIENCE, EDUCATION, CERTIFICATIONS } from "../config";
     }
   </ol>
 
-  <div class="reveal mt-2 flex flex-wrap gap-2.5" style="--d:160ms">
-    {
-      CERTIFICATIONS.map((c) => (
-        <span class="rounded-full border border-[oklch(0.6_0.13_70/0.45)] bg-[oklch(0.6_0.13_70/0.12)] px-4 py-1.5 font-mono text-xs text-[oklch(0.78_0.12_75)]">
-          ✓ {c}
-        </span>
-      ))
-    }
+  <div class="reveal mt-4" style="--d:160ms">
+    <p class="kicker mb-4">Certifications</p>
+    <div class="flex flex-wrap gap-3">
+      {
+        CERTIFICATIONS.map((c) => {
+          const Tag = c.verify ? "a" : "div";
+          return (
+            <Tag
+              href={c.verify}
+              target={c.verify ? "_blank" : undefined}
+              rel={c.verify ? "noopener noreferrer" : undefined}
+              class="group inline-flex items-center gap-3 rounded-xl border border-[oklch(0.32_0.02_160/0.6)] bg-[var(--color-surface)] px-4 py-3 transition-colors hover:border-[oklch(0.8_0.165_162/0.5)]"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="shrink-0 text-[var(--color-aurora)]"
+                aria-hidden="true"
+              >
+                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              <span class="text-left">
+                <span class="block text-sm font-medium text-[var(--color-ink)]">{c.name}</span>
+                <span class="block font-mono text-[0.66rem] text-[var(--color-muted)]">
+                  {c.meta}
+                  {c.verify && <span class="text-[var(--color-aurora)]"> · Verify ↗</span>}
+                </span>
+              </span>
+            </Tag>
+          );
+        })
+      }
+    </div>
   </div>
 </section>

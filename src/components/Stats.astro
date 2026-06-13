@@ -8,11 +8,14 @@ const stats = [
 ];
 ---
 
-<section class="border-y border-[oklch(0.32_0.02_160/0.35)]">
-  <div class="mx-auto grid max-w-6xl grid-cols-2 divide-[oklch(0.32_0.02_160/0.35)] px-6 max-md:gap-y-10 max-md:py-10 md:grid-cols-4 md:divide-x md:py-14">
+<section class="mx-auto max-w-6xl px-6 py-[clamp(3rem,8vh,5rem)]">
+  <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
     {
       stats.map((s, i) => (
-        <div class="reveal text-center" style={`--d:${i * 90}ms`}>
+        <div
+          class="reveal rounded-2xl border border-[oklch(0.32_0.02_160/0.5)] bg-[var(--color-surface)] px-5 py-7 text-center transition-colors hover:border-[oklch(0.8_0.165_162/0.4)]"
+          style={`--d:${i * 90}ms`}
+        >
           <div
             class={`font-display text-4xl font-bold sm:text-5xl ${s.solar ? "text-[var(--color-solar)]" : "text-[var(--color-ink)]"}`}
           >

@@ -133,9 +133,18 @@ export const EDUCATION: Education[] = [
   },
 ];
 
-export const CERTIFICATIONS = [
-  "RedHat Certified Engineer (RHCE · EX294)",
-  "CISCO CCNA",
+export type Certification = { name: string; meta: string; verify?: string };
+
+export const CERTIFICATIONS: Certification[] = [
+  {
+    name: "Red Hat Certified Engineer",
+    meta: "RHCE · EX294 · ID 210215653",
+    verify: "https://rhtapps.redhat.com/verify?certId=210215653",
+  },
+  {
+    name: "Cisco CCNA",
+    meta: "Cisco · Issued Jun 2025",
+  },
 ];
 
 // ── Projects (live demos) ───────────────────────────────────
