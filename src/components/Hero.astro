@@ -6,15 +6,19 @@ import SpiralScene from "./SpiralScene.astro";
 <section id="top" class="aurora-haze relative min-h-[100svh] overflow-hidden">
   <SpiralScene />
 
-  <!-- legibility scrim over the particle field -->
-  <div class="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[62%] bg-gradient-to-t from-[oklch(0.09_0_0/0.88)] via-[oklch(0.09_0_0/0.4)] to-transparent" aria-hidden="true"></div>
+  <!-- legibility scrim: darkest under the centred text, fading up so the galaxy stays bright -->
+  <div
+    class="pointer-events-none absolute inset-0 z-[5]"
+    style="background: radial-gradient(125% 95% at 50% 64%, oklch(0.09 0 0 / 0.92) 0%, oklch(0.09 0 0 / 0.55) 40%, transparent 74%);"
+    aria-hidden="true"
+  ></div>
 
   <!-- HUD readout, top right -->
   <div class="hud absolute right-5 top-6 z-10 hidden text-right leading-relaxed sm:block">
     12.97°N / 77.59°E<br />BLR · IST
   </div>
 
-  <div class="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-6 pb-28 pt-28">
+  <div class="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-6 py-24">
     <div class="reveal mb-6 inline-flex items-center gap-3 self-start rounded-full border border-[oklch(0.32_0.02_160/0.6)] bg-[oklch(0.13_0.008_160/0.7)] py-1.5 pl-1.5 pr-4 backdrop-blur-sm" style="--d:80ms">
       <img src={SITE.photo} alt={SITE.name} width="32" height="32" class="h-8 w-8 rounded-full border border-[oklch(0.8_0.165_162/0.5)] object-cover" />
       <span class="relative flex h-2 w-2">

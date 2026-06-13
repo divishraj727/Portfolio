@@ -6,9 +6,9 @@ import { PROJECTS } from "../config";
   <!-- Heading lives in normal flow above the spiral stage -->
   <div class="mx-auto max-w-6xl px-6 pt-[clamp(4rem,10vh,8rem)]">
     <div class="reveal">
-      <p class="hud mb-4">SPIRAL VIEW · SCROLL TO ORBIT</p>
-      <h2 class="display text-[clamp(2.2rem,7vw,4.5rem)]">
-        Project<br /><span class="text-[var(--color-aurora)]">vortex</span>
+      <p class="kicker mb-5">Spiral view · scroll to orbit</p>
+      <h2 class="section-statement">
+        Project <span class="text-[var(--color-aurora)]">vortex</span>
       </h2>
       <p class="mt-5 max-w-md text-[var(--color-muted)]">
         Four live, deployed applications, orbiting a singularity. Scroll to pull each into focus, then open it.
@@ -108,7 +108,7 @@ import { PROJECTS } from "../config";
     position: absolute;
     top: 50%;
     left: 50%;
-    width: clamp(210px, 24vw, 300px);
+    width: clamp(150px, 40vw, 260px);
     margin: 0;
     will-change: transform, opacity;
     transform: translate(-50%, -50%);
@@ -127,7 +127,7 @@ import { PROJECTS } from "../config";
   .spiral.is-spiral .spiral-core {
     display: block;
     position: absolute;
-    top: 48%;
+    top: 50%;
     left: 50%;
     height: 16rem;
     width: 16rem;
@@ -152,16 +152,16 @@ import { PROJECTS } from "../config";
     z-index: 2000;
   }
   .spiral-dot {
-    height: 0.4rem;
-    width: 0.4rem;
+    height: 0.5rem;
+    width: 0.5rem;
     border-radius: 999px;
-    background: oklch(0.32 0.02 160 / 0.9);
+    background: oklch(0.55 0.03 160 / 0.85);
     transition: background 0.3s ease, width 0.3s ease;
   }
   .spiral-dot.active {
-    width: 1.4rem;
+    width: 1.6rem;
     background: var(--color-aurora);
-    box-shadow: 0 0 12px oklch(0.8 0.165 162 / 0.7);
+    box-shadow: 0 0 14px oklch(0.8 0.165 162 / 0.85);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -179,36 +179,40 @@ import { PROJECTS } from "../config";
   if (section && track && stage && !reduce) {
     section.classList.add("is-spiral");
 
-    // Real project cards (kept for SEO). Clone once for a denser, "infinite" vortex.
+    // Real project cards (kept for SEO). Clone twice → ~12 nodes, enough bodies
+    // to populate a full ring instead of one bunched-up arc.
     const real = Array.from(stage.querySelectorAll<HTMLElement>("[data-spiral-card]"));
     const realCount = real.length;
     const nodes: HTMLElement[] = [...real];
-    real.forEach((card) => {
-      const clone = card.cloneNode(true) as HTMLElement;
-      clone.setAttribute("aria-hidden", "true");
-      clone.dataset.clone = "1";
-      clone.querySelectorAll("a").forEach((a) => a.setAttribute("tabindex", "-1"));
-      stage.appendChild(clone);
-      nodes.push(clone);
-    });
+    for (let pass = 0; pass < 2; pass++) {
+      real.forEach((card) => {
+        const clone = card.cloneNode(true) as HTMLElement;
+        clone.setAttribute("aria-hidden", "true");
+        clone.dataset.clone = "1";
+        clone.querySelectorAll("a").forEach((a) => a.setAttribute("tabindex", "-1"));
+        stage.appendChild(clone);
+        nodes.push(clone);
+      });
+    }
     const N = nodes.length;
 
-    const STEP = (46 * Math.PI) / 180; // angular gap between nodes
-    const K = 0.7; // radius/scale falloff per step toward the core
+    const STEP = (100 * Math.PI) / 180; // wide, non-repeating angle → a clear orbit, not a stack
+    const K = 0.78; // depth falloff — cards visibly recede toward the core
     const START = Math.PI / 2; // focus node sits just below centre, fully in view
+    const MAX_PROGRESS = realCount * 2; // two full loops over the scroll track
 
-    let baseR = 200;
+    let baseR = 220;
     const measure = () => {
-      baseR = Math.min(stage.clientWidth, stage.clientHeight) * 0.22;
+      baseR = Math.min(stage.clientWidth, stage.clientHeight) * 0.3;
     };
 
     let progress = 0;
     const layout = () => {
       for (let i = 0; i < N; i++) {
         const el = nodes[i];
-        // relative position along the spiral, recycled into a visible window
+        // relative position along the spiral, recycled into a wide visible window
         let t = i - progress;
-        t = (((t + 1.5) % N) + N) % N - 1.5;
+        t = (((t + 2) % N) + N) % N - 2;
 
         const r = baseR * Math.pow(K, t);
         const a = START + t * STEP;
@@ -217,8 +221,8 @@ import { PROJECTS } from "../config";
         const s = Math.pow(K, t);
 
         let op = 1;
-        if (t < -0.3) op = Math.max(0, 1 + (t + 0.3) / 0.7); // fade huge ones exiting front
-        if (t > N - 3) op = Math.max(0, (N - 1.5 - t) / 1.5); // fade tiny ones near recycle seam
+        if (t < -0.4) op = Math.max(0, 1 + (t + 0.4) / 1.0); // fade huge ones entering/exiting front
+        if (t > 4.5) op = Math.max(0, (6.0 - t) / 1.5); // fade small ones into the core
 
         el.style.transform = `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${s.toFixed(3)})`;
         el.style.opacity = op.toFixed(3);
@@ -237,7 +241,7 @@ import { PROJECTS } from "../config";
         const top = track.getBoundingClientRect().top + scrollY; // absolute document offset
         const span = track.offsetHeight - innerHeight;
         const p = span > 0 ? (scrollY - top) / span : 0;
-        progress = Math.min(Math.max(p, 0), 1) * (N - 1.6);
+        progress = Math.min(Math.max(p, 0), 1) * MAX_PROGRESS;
         layout();
         ticking = false;
       });

@@ -101,7 +101,7 @@ const websiteSchema = {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
-    <!-- Fonts: Sora (display), Manrope (body), JetBrains Mono (labels) -->
+    <!-- Fonts: Unbounded (display), Hanken Grotesk (body), Martian Mono (labels) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -139,7 +139,9 @@ const websiteSchema = {
 
     <!-- Scroll motion: reveal + stagger + count-up + parallax + progress -->
     <script is:inline>
-      // 1) reveal / pop on scroll
+      // 1) reveal / pop on scroll. Trigger as soon as any sliver enters (threshold 0),
+      //    nudged up via rootMargin so reveals fire a touch before the element's top.
+      const revealEls = document.querySelectorAll(".reveal, .pop, .reveal-blur, .clip-sweep");
       const io = new IntersectionObserver(
         (entries) => {
           for (const e of entries) {
@@ -149,9 +151,23 @@ const websiteSchema = {
             }
           }
         },
-        { threshold: 0.12 },
+        { threshold: 0.01, rootMargin: "0px 0px -8% 0px" },
       );
-      document.querySelectorAll(".reveal, .pop, .reveal-blur, .clip-sweep").forEach((el) => io.observe(el));
+      revealEls.forEach((el) => io.observe(el));
+
+      // Safety net: anything already in (or above) the viewport that the observer
+      // didn't catch on first paint gets force-revealed, so no block strands dim.
+      const sweep = () => {
+        for (const el of revealEls) {
+          if (el.classList.contains("is-visible")) continue;
+          if (el.getBoundingClientRect().top < innerHeight * 0.92) {
+            el.classList.add("is-visible");
+            io.unobserve(el);
+          }
+        }
+      };
+      addEventListener("load", () => requestAnimationFrame(sweep), { once: true });
+      setTimeout(sweep, 1200);
 
       // 2) count-up numbers (elements with [data-count])
       const fmt = (n, suffix) => n.toLocaleString() + (suffix || "");

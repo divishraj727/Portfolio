@@ -54,12 +54,50 @@ h1, h2, h3 {
 
 p { text-wrap: pretty; }
 
+/* Hero name only — the one place uppercase Unbounded is reserved for. */
 .display {
   font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.02;
   text-transform: uppercase;
+}
+
+/* Section headings — mixed-case, well below the hero name, so hierarchy reads. */
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3.6vw, 2.25rem);
+  letter-spacing: -0.015em;
+  line-height: 1.12;
+}
+/* Statement moments (Projects, Contact) — bigger + heavier than a section title,
+   but still mixed-case so it never reads as template all-caps. */
+.section-statement {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 5.5vw, 3.4rem);
+  letter-spacing: -0.025em;
+  line-height: 1.04;
+}
+
+/* Kicker label — the scarce solar accent that breaks the monochrome green. */
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.kicker::before {
+  content: "";
+  width: 1.6rem;
+  height: 1px;
+  background: var(--color-solar);
+  box-shadow: 0 0 8px oklch(0.6 0.13 70 / 0.7);
 }
 
 /* HUD readout: data labels only, never section eyebrows */

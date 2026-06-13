@@ -1,9 +1,10 @@
 ---
+// Real, verifiable facts from the résumé — no invented metrics.
 const stats = [
-  { count: "2", suffix: "+", label: "years experience" },
-  { count: "7", suffix: "+", label: "projects shipped" },
-  { count: "99.9", suffix: "%", label: "uptime delivered" },
-  { count: "1000", suffix: "+", label: "users reached" },
+  { count: "4", suffix: "", label: "live products shipped", solar: false },
+  { count: "3", suffix: "", label: "companies worked with", solar: false },
+  { count: "2", suffix: "", label: "pro certs · RHCE, CCNA", solar: false },
+  { count: "8.6", suffix: "", label: "M.Tech CGPA · RVCE", solar: true },
 ];
 ---
 
@@ -12,7 +13,9 @@ const stats = [
     {
       stats.map((s, i) => (
         <div class="reveal text-center" style={`--d:${i * 90}ms`}>
-          <div class="font-display text-4xl font-bold text-[var(--color-ink)] sm:text-5xl">
+          <div
+            class={`font-display text-4xl font-bold sm:text-5xl ${s.solar ? "text-[var(--color-solar)]" : "text-[var(--color-ink)]"}`}
+          >
             <span data-count={s.count} data-suffix={s.suffix}>0{s.suffix}</span>
           </div>
           <p class="hud mt-3">{s.label}</p>
