@@ -188,11 +188,43 @@ export const PROJECTS: Project[] = [
   },
 ];
 
+// ── Other work (production / research — no public demo) ─────
+export type Work = {
+  title: string;
+  kind: string; // Production · Research · DevOps
+  description: string;
+  tags: string[];
+};
+
+export const OTHER_WORK: Work[] = [
+  {
+    title: "Modular ERP System",
+    kind: "Production",
+    description:
+      "A full-stack ERP with 5+ modules handling end-to-end business operations across departments. Built with Django and React, deployed on AWS (EC2, S3, RDS/PostgreSQL), containerised with Docker and orchestrated on Kubernetes at 99.9% uptime.",
+    tags: ["Django", "React", "AWS", "Docker", "Kubernetes", "PostgreSQL"],
+  },
+  {
+    title: "Explainable AI for Android Malware Detection",
+    kind: "M.Tech research",
+    description:
+      "A research project using SHAP and LIME over improved ML models to make Android malware detection transparent and interpretable, not just accurate, so each prediction can be explained.",
+    tags: ["Python", "Machine Learning", "SHAP", "LIME"],
+  },
+  {
+    title: "Infrastructure Automation with Ansible",
+    kind: "DevOps",
+    description:
+      "Automated AWS EC2 provisioning and package/Yum configuration with Ansible playbooks, cutting manual server setup time significantly and keeping environments reproducible.",
+    tags: ["Ansible", "AWS EC2", "Linux", "Bash"],
+  },
+];
+
 // ── Nav links (in-page anchors) ─────────────────────────────
 export const NAV = [
   { label: "About", href: "#about" },
   { label: "Experience", href: "#experience" },
   { label: "Skills", href: "#skills" },
-  { label: "Projects", href: "#projects" },
+  { label: "Work", href: "#projects" },
   { label: "Contact", href: "#contact" },
 ];

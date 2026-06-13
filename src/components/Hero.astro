@@ -13,22 +13,17 @@ import SpiralScene from "./SpiralScene.astro";
     aria-hidden="true"
   ></div>
 
-  <!-- HUD readout, top right -->
-  <div class="hud absolute right-5 top-6 z-10 hidden text-right leading-relaxed sm:block">
-    12.97°N / 77.59°E<br />BLR · IST
-  </div>
-
   <div class="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-center px-6 py-24">
     <div class="reveal mb-6 inline-flex items-center gap-3 self-start rounded-full border border-[oklch(0.32_0.02_160/0.6)] bg-[oklch(0.13_0.008_160/0.7)] py-1.5 pl-1.5 pr-4 backdrop-blur-sm" style="--d:80ms">
       <img src={SITE.photo} alt={SITE.name} width="32" height="32" class="h-8 w-8 rounded-full border border-[oklch(0.8_0.165_162/0.5)] object-cover" />
       <span class="relative flex h-2 w-2">
-        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-solar)] opacity-70"></span>
-        <span class="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-solar)]"></span>
+        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-aurora)] opacity-60"></span>
+        <span class="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-aurora)]"></span>
       </span>
-      <span class="text-sm font-medium text-[var(--color-body)]">Available for projects · {SITE.location}</span>
+      <span class="text-sm font-medium text-[var(--color-body)]">Open to opportunities · {SITE.location}</span>
     </div>
 
-    <p class="hud reveal mb-4" style="--d:140ms">{SITE.role.toUpperCase()} // DJANGO · REACT · AWS · K8S</p>
+    <p class="hud reveal mb-4" style="--d:140ms">Software Engineer</p>
 
     <h1 class="display reveal text-[clamp(2.5rem,10.5vw,5.5rem)]" style="--d:200ms">
       Divish<br />
@@ -52,10 +47,9 @@ import SpiralScene from "./SpiralScene.astro";
     </div>
   </div>
 
-  <!-- scroll cue -->
-  <div class="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 sm:flex" aria-hidden="true">
-    <span class="hud">SCROLL</span>
-    <span class="scroll-line block h-10 w-px bg-[oklch(0.8_0.165_162/0.55)]"></span>
+  <!-- subtle scroll cue -->
+  <div class="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 sm:block" aria-hidden="true">
+    <span class="scroll-line block h-10 w-px bg-[oklch(0.8_0.165_162/0.45)]"></span>
   </div>
 </section>
 

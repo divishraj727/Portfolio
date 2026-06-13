@@ -6,12 +6,12 @@ import { PROJECTS } from "../config";
   <!-- Heading lives in normal flow above the spiral stage -->
   <div class="mx-auto max-w-6xl px-6 pt-[clamp(4rem,10vh,8rem)]">
     <div class="reveal">
-      <p class="kicker mb-5">Spiral view · scroll to orbit</p>
+      <p class="kicker mb-5">Live projects</p>
       <h2 class="section-statement">
-        Project <span class="text-[var(--color-aurora)]">vortex</span>
+        Selected <span class="text-[var(--color-aurora)]">work</span>
       </h2>
       <p class="mt-5 max-w-md text-[var(--color-muted)]">
-        Four live, deployed applications, orbiting a singularity. Scroll to pull each into focus, then open it.
+        Apps I've designed, built and deployed end to end. Scroll to bring each into focus, then open it live.
       </p>
     </div>
   </div>
@@ -27,7 +27,7 @@ import { PROJECTS } from "../config";
               href={p.url}
               target="_blank"
               rel="noopener noreferrer"
-              class="group block overflow-hidden rounded-2xl border border-[oklch(0.32_0.02_160/0.5)] bg-[var(--color-surface)] shadow-[0_24px_60px_-24px_oklch(0_0_0/0.9)]"
+              class="group block overflow-hidden rounded-2xl border border-[oklch(0.42_0.03_160/0.9)] bg-[var(--color-surface)] shadow-[0_30px_70px_-20px_oklch(0_0_0/0.95)] ring-1 ring-[oklch(0_0_0/0.5)]"
               aria-label={`Open ${p.title} live`}
             >
               <div class="flex items-center gap-2 border-b border-[oklch(0.32_0.02_160/0.4)] bg-[var(--color-surface-2)] px-4 py-2.5">
