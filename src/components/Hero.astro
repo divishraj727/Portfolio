@@ -1,5 +1,5 @@
 ---
-import { SITE } from "../config";
+import { SITE, HERO_BADGES } from "../config";
 import SpiralScene from "./SpiralScene.astro";
 ---
 
@@ -34,7 +34,17 @@ import SpiralScene from "./SpiralScene.astro";
       {SITE.tagline}
     </p>
 
-    <div class="reveal mt-9 flex flex-wrap items-center gap-3" style="--d:360ms">
+    <ul class="reveal mt-6 flex flex-wrap gap-2" style="--d:340ms">
+      {
+        HERO_BADGES.map((b) => (
+          <li class="rounded-md border border-[oklch(0.32_0.02_160/0.5)] bg-[oklch(0.13_0.008_160/0.5)] px-2.5 py-1 font-mono text-[0.7rem] text-[var(--color-body)] backdrop-blur-sm">
+            {b}
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="reveal mt-9 flex flex-wrap items-center gap-3" style="--d:420ms">
       <a href="#projects" class="btn-aurora px-7 py-3.5 text-sm">View projects</a>
       <a href="#contact" class="btn-ghost px-7 py-3.5 text-sm">Contact me</a>
       <span class="mx-1 hidden h-6 w-px bg-[oklch(0.32_0.02_160/0.6)] sm:block"></span>

@@ -43,6 +43,9 @@ export const KEYWORDS = [
   "AWS developer Bangalore",
 ];
 
+// ── Hero badges (compact row under the tagline) ─────────────
+export const HERO_BADGES = ["Python", "React", "AWS", "DSA", "DB", "AI", "LLMs", "Claude", "Gemini"];
+
 // ── Tech stack (grouped), from résumé ──────────────────────
 export const SKILLS: { group: string; items: string[] }[] = [
   {
@@ -54,20 +57,20 @@ export const SKILLS: { group: string; items: string[] }[] = [
     items: ["Python", "Django", "Django REST Framework", "REST APIs", "Serverless", "Core Java"],
   },
   {
+    group: "AI & GenAI",
+    items: ["Generative AI", "Agentic AI", "LLMs", "RAG", "Vector DBs", "Claude", "Gemini", "Prompt Engineering"],
+  },
+  {
     group: "Cloud (AWS)",
     items: ["EC2", "S3", "VPC", "IAM", "RDS", "Lambda", "API Gateway", "CloudWatch"],
   },
   {
     group: "DevOps & Tools",
-    items: ["Docker", "Kubernetes", "Ansible", "CI/CD", "Git & GitHub", "Bash / Shell"],
+    items: ["Docker", "Kubernetes", "Ansible", "CI/CD", "Git & GitHub", "Bash / Shell", "Linux (RHEL/Ubuntu)"],
   },
   {
     group: "Databases",
     items: ["PostgreSQL", "MySQL", "SQLite", "ORM"],
-  },
-  {
-    group: "Networking & OS",
-    items: ["TCP/IP", "DNS", "Load Balancing", "Linux (RHEL, Ubuntu, CentOS)"],
   },
 ];
 
