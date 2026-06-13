@@ -1,0 +1,27 @@
+---
+const items = [
+  "Full-Stack Web Apps",
+  "AI-Powered Applications",
+  "AWS Cloud Deployment",
+  "Docker & Kubernetes",
+  "Django REST APIs",
+  "React Interfaces",
+  "SEO-Ready Builds",
+  "CI/CD Automation",
+];
+// duplicated once so the loop is seamless
+const loop = [...items, ...items];
+---
+
+<div class="ticker border-b border-[oklch(0.32_0.02_160/0.35)] py-5" aria-label="Capabilities">
+  <div class="ticker-track">
+    {
+      loop.map((item) => (
+        <span class="flex shrink-0 items-center gap-6 pr-6 font-display text-sm font-bold uppercase tracking-wide text-[var(--color-muted)]">
+          {item}
+          <span class="h-1.5 w-1.5 rounded-full bg-[var(--color-aurora)] shadow-[0_0_10px_oklch(0.8_0.165_162/0.7)]" aria-hidden="true" />
+        </span>
+      ))
+    }
+  </div>
+</div>

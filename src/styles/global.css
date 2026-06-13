@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Aurora-on-black deep-space system (see DESIGN.md)
+   ============================================================ */
+@theme {
+  --color-bg: oklch(0.09 0 0);
+  --color-surface: oklch(0.13 0.008 160);
+  --color-surface-2: oklch(0.17 0.012 160);
+  --color-line: oklch(0.32 0.02 160);
+  --color-ink: oklch(0.95 0.005 160);
+  --color-body: oklch(0.84 0.01 160);
+  --color-muted: oklch(0.66 0.02 160);
+  --color-aurora: oklch(0.8 0.165 162);
+  --color-aurora-deep: oklch(0.55 0.12 162);
+  --color-solar: oklch(0.6 0.13 70);
+
+  --font-display: "Unbounded", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Martian Mono", ui-monospace, monospace;
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+  background-color: var(--color-bg);
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-body);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+  /* sparse starfield, two depth layers */
+  background-image:
+    radial-gradient(1px 1px at 22% 18%, oklch(0.9 0.01 160 / 0.32) 50%, transparent 51%),
+    radial-gradient(1px 1px at 71% 64%, oklch(0.9 0.01 160 / 0.22) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 48% 87%, oklch(0.8 0.05 162 / 0.2) 50%, transparent 51%),
+    radial-gradient(1px 1px at 87% 31%, oklch(0.9 0.01 160 / 0.26) 50%, transparent 51%),
+    radial-gradient(1px 1px at 9% 56%, oklch(0.8 0.05 162 / 0.16) 50%, transparent 51%);
+  background-size: 520px 520px;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+p { text-wrap: pretty; }
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+
+/* HUD readout: data labels only, never section eyebrows */
+.hud {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+
+/* ── Buttons ───────────────────────────────────────────────── */
+.btn-aurora {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-aurora);
+  color: oklch(0.13 0.02 162);
+  font-weight: 700;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+  box-shadow: 0 0 0 1px oklch(0.8 0.165 162 / 0.4), 0 0 28px oklch(0.8 0.165 162 / 0.25);
+}
+.btn-aurora:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px oklch(0.8 0.165 162 / 0.7), 0 0 44px oklch(0.8 0.165 162 / 0.45);
+}
+.btn-aurora:active { transform: translateY(0); background: var(--color-aurora-deep); color: var(--color-ink); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid oklch(0.32 0.02 160 / 0.8);
+  color: var(--color-ink);
+  font-weight: 600;
+  transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-ghost:hover {
+  transform: translateY(-2px);
+  border-color: oklch(0.8 0.165 162 / 0.6);
+  background-color: oklch(0.8 0.165 162 / 0.06);
+}
+
+.icon-orb {
+  display: grid;
+  place-items: center;
+  height: 2.9rem;
+  width: 2.9rem;
+  border-radius: 999px;
+  border: 1px solid oklch(0.32 0.02 160 / 0.8);
+  color: var(--color-body);
+  transition: border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+.icon-orb:hover {
+  color: var(--color-aurora);
+  border-color: oklch(0.8 0.165 162 / 0.6);
+  box-shadow: 0 0 22px oklch(0.8 0.165 162 / 0.3);
+  transform: translateY(-2px);
+}
+
+/* ── Panels ────────────────────────────────────────────────── */
+.panel {
+  background: var(--color-surface);
+  border: 1px solid oklch(0.32 0.02 160 / 0.45);
+  border-radius: 1.25rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.panel:hover {
+  border-color: oklch(0.8 0.165 162 / 0.45);
+  box-shadow: 0 0 36px oklch(0.8 0.165 162 / 0.12);
+  transform: translateY(-3px);
+}
+
+/* aurora horizon glow used behind hero content */
+.aurora-haze {
+  background:
+    radial-gradient(60rem 32rem at 50% 118%, oklch(0.55 0.12 162 / 0.34), transparent 64%),
+    radial-gradient(38rem 22rem at 78% -12%, oklch(0.55 0.12 162 / 0.12), transparent 60%);
+}
+
+/* ── Capability ticker ─────────────────────────────────────── */
+.ticker { overflow: hidden; }
+.ticker-track {
+  display: flex;
+  width: max-content;
+  gap: 0;
+  animation: tickerScroll 36s linear infinite;
+}
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker:hover .ticker-track { animation-play-state: paused; }
+
+/* ── Motion: varied reveals ────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0.001;
+    transform: translateY(26px);
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0ms);
+  }
+  .reveal.is-visible { opacity: 1; transform: none; }
+
+  .reveal-blur {
+    opacity: 0.001;
+    filter: blur(10px);
+    transform: translateY(14px);
+    transition: opacity 0.9s ease, filter 0.9s ease,
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0ms);
+  }
+  .reveal-blur.is-visible { opacity: 1; filter: blur(0); transform: none; }
+
+  .clip-sweep {
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 1s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0ms);
+  }
+  .clip-sweep.is-visible { clip-path: inset(0 0 0 0); }
+
+  .pop {
+    opacity: 0.001;
+    transform: translateY(12px) scale(0.96);
+    transition: opacity 0.5s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0ms);
+  }
+  .pop.is-visible { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+::selection { background: var(--color-aurora); color: oklch(0.13 0.02 162); }
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb {
+  background: oklch(0.32 0.02 160 / 0.7);
+  border-radius: 99px;
+  border: 2px solid var(--color-bg);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-aurora-deep); }

@@ -1,0 +1,8 @@
+{
+  "framework": "astro",
+  "files": ["src/layouts/Layout.astro"],
+  "insertBefore": "</head>",
+  "commentSyntax": "html",
+  "devServer": { "command": "npm run dev", "port": 4321 },
+  "cspChecked": true
+}

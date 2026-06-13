@@ -1,0 +1,149 @@
+---
+// Decorative WebGL spiral galaxy. Deferred (idle import), DPR-capped,
+// paused off-screen, static frame under prefers-reduced-motion.
+// Pure enhancement: the hero reads identically without it.
+---
+
+<div id="spiral-wrap" class="absolute inset-0 overflow-hidden" aria-hidden="true">
+  <canvas id="spiral-canvas" class="h-full w-full opacity-0 transition-opacity duration-1000"></canvas>
+</div>
+
+<script>
+  const wrap = document.getElementById("spiral-wrap");
+  const canvas = document.getElementById("spiral-canvas") as HTMLCanvasElement | null;
+
+  async function boot() {
+    if (!wrap || !canvas) return;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const mobile = innerWidth < 768;
+
+    let THREE: typeof import("three");
+    try {
+      THREE = await import("three");
+    } catch {
+      return; // CSS haze remains the hero background
+    }
+
+    let renderer: import("three").WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: "low-power" });
+    } catch {
+      return;
+    }
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 40);
+    camera.position.set(0, 1.7, 4.7);
+    camera.lookAt(0, -0.2, 0);
+
+    // ── galaxy ──────────────────────────────────────────────
+    const COUNT = mobile ? 6500 : 14000;
+    const ARMS = 3;
+    const RADIUS = 5.2;
+    const positions = new Float32Array(COUNT * 3);
+    const colors = new Float32Array(COUNT * 3);
+    const core = new THREE.Color("#d9ffe9");
+    const aurora = new THREE.Color("#3fe8a6");
+    const edge = new THREE.Color("#0d4f38");
+
+    for (let i = 0; i < COUNT; i++) {
+      const i3 = i * 3;
+      const r = Math.pow(Math.random(), 1.6) * RADIUS;
+      const arm = ((i % ARMS) / ARMS) * Math.PI * 2;
+      const spin = r * 1.18;
+      const jitter = () => Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1) * 0.42 * (0.35 + r * 0.32);
+      positions[i3] = Math.cos(arm + spin) * r + jitter();
+      positions[i3 + 1] = jitter() * 0.42;
+      positions[i3 + 2] = Math.sin(arm + spin) * r + jitter();
+
+      const c = r < 0.7 ? core.clone().lerp(aurora, r / 0.7) : aurora.clone().lerp(edge, (r - 0.7) / (RADIUS - 0.7));
+      colors[i3] = c.r; colors[i3 + 1] = c.g; colors[i3 + 2] = c.b;
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    const mat = new THREE.PointsMaterial({
+      size: mobile ? 0.022 : 0.016,
+      sizeAttenuation: true,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.92,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const galaxy = new THREE.Points(geo, mat);
+    galaxy.rotation.x = 0.42;
+    scene.add(galaxy);
+
+    // ── sizing ──────────────────────────────────────────────
+    const fit = () => {
+      const { clientWidth: w, clientHeight: h } = wrap;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    fit();
+    addEventListener("resize", fit, { passive: true });
+
+    canvas.style.opacity = "1";
+
+    if (reduced) {
+      renderer.render(scene, camera); // one static frame, no loop
+      addEventListener("resize", () => renderer.render(scene, camera), { passive: true });
+      return;
+    }
+
+    // ── interaction state ───────────────────────────────────
+    let px = 0, py = 0; // pointer target
+    addEventListener("pointermove", (e) => {
+      px = (e.clientX / innerWidth - 0.5) * 2;
+      py = (e.clientY / innerHeight - 0.5) * 2;
+    }, { passive: true });
+
+    let scrollT = 0; // 0..1 through the hero
+    const onScroll = () => {
+      scrollT = Math.min(Math.max(scrollY / (wrap.clientHeight || innerHeight), 0), 1);
+    };
+    addEventListener("scroll", onScroll, { passive: true });
+
+    // ── loop with visibility pausing ────────────────────────
+    const clock = new THREE.Clock();
+    let raf = 0;
+    let running = false;
+
+    const tick = () => {
+      const dt = Math.min(clock.getDelta(), 0.05);
+      galaxy.rotation.y += dt * (0.055 + scrollT * 0.22);
+      // scroll pulls the camera into the galaxy
+      camera.position.z = 4.7 - scrollT * 2.6;
+      camera.position.y = 1.7 - scrollT * 1.15;
+      // pointer parallax, eased
+      galaxy.rotation.z += ((px * 0.07) - galaxy.rotation.z) * 0.04;
+      galaxy.rotation.x += ((0.42 + py * 0.06) - galaxy.rotation.x) * 0.04;
+      camera.lookAt(0, -0.2, 0);
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(tick);
+    };
+    const start = () => { if (!running) { running = true; clock.start(); raf = requestAnimationFrame(tick); } };
+    const stop = () => { if (running) { running = false; cancelAnimationFrame(raf); } };
+
+    new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()), { threshold: 0.02 }).observe(wrap);
+    document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+    // free the GPU context on teardown (avoids WebGL context leaks across navigations)
+    addEventListener("pagehide", () => {
+      stop();
+      geo.dispose();
+      mat.dispose();
+      renderer.dispose();
+    }, { once: true });
+    start();
+  }
+
+  if ("requestIdleCallback" in window) {
+    requestIdleCallback(() => boot(), { timeout: 1600 });
+  } else {
+    setTimeout(boot, 250);
+  }
+</script>

@@ -1,0 +1,29 @@
+---
+import { SKILLS } from "../config";
+---
+
+<section id="skills" class="mx-auto max-w-6xl px-6 py-[clamp(4rem,10vh,8rem)]">
+  <h2 class="display reveal mb-14 text-[clamp(1.9rem,5vw,3.2rem)]">
+    Stack <span class="text-[var(--color-aurora)]">&amp;</span> tooling
+  </h2>
+
+  <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      SKILLS.map((group, i) => (
+        <div class="panel reveal p-6" style={`--d:${i * 70}ms`}>
+          <h3 class="mb-5 flex items-center gap-2.5 font-mono text-[0.78rem] text-[var(--color-aurora)]">
+            <span class="h-1.5 w-1.5 rounded-full bg-current shadow-[0_0_10px_currentColor]" aria-hidden="true" />
+            {group.group}
+          </h3>
+          <ul class="flex flex-wrap gap-2">
+            {group.items.map((item) => (
+              <li class="rounded-lg border border-[oklch(0.32_0.02_160/0.45)] bg-[var(--color-surface-2)] px-2.5 py-1 text-sm text-[var(--color-body)]">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>

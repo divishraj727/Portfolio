@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/divis/.claude/skills/**)",
+      "Read(//c/Users/divis/.claude/skills/astro/**)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'Initial portfolio: aurora-on-black futuristic design *)",
+      "Bash(git branch *)",
+      "Bash(git remote *)"
+    ]
+  }
+}

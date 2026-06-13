@@ -1,0 +1,156 @@
+---
+import { SITE } from "../config";
+const suggestions = [
+  "What's Divish's tech stack?",
+  "Tell me about his projects",
+  "Is he available for hire?",
+];
+---
+
+<!-- Floating launcher -->
+<button
+  id="chat-launch"
+  aria-label="Chat with Divish's AI assistant"
+  class="fixed bottom-5 right-5 z-[58] flex h-14 w-14 items-center justify-center rounded-full border border-[oklch(0.8_0.165_162/0.55)] bg-[var(--color-surface)] shadow-[0_0_26px_oklch(0.8_0.165_162/0.3)] transition-transform hover:scale-105"
+>
+  <img src={SITE.photo} alt="" width="48" height="48" class="h-11 w-11 rounded-full object-cover" />
+  <span class="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5">
+    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-aurora)] opacity-70"></span>
+    <span class="relative inline-flex h-3.5 w-3.5 rounded-full bg-[var(--color-aurora)]"></span>
+  </span>
+</button>
+
+<!-- Chat panel -->
+<div
+  id="chat-panel"
+  role="dialog"
+  aria-label="AI assistant"
+  class="fixed bottom-5 right-5 z-[59] flex h-[min(560px,80vh)] w-[min(380px,92vw)] origin-bottom-right scale-95 flex-col overflow-hidden rounded-3xl border border-[oklch(0.32_0.02_160/0.6)] bg-[var(--color-bg)] opacity-0 shadow-2xl transition-all duration-200 [&[hidden]]:pointer-events-none"
+  hidden
+>
+  <!-- header -->
+  <div class="flex items-center gap-3 border-b border-[oklch(0.32_0.02_160/0.5)] bg-[var(--color-surface)] px-4 py-3">
+    <img src={SITE.photo} alt="" width="36" height="36" class="h-9 w-9 rounded-full border border-[oklch(0.8_0.165_162/0.5)] object-cover" />
+    <div class="flex-1">
+      <p class="text-sm font-bold leading-tight text-[var(--color-ink)]">Ask about {SITE.name.split(" ")[0]}</p>
+      <p class="font-mono text-[10px] text-[var(--color-muted)]">AI ASSISTANT · USUALLY INSTANT</p>
+    </div>
+    <button id="chat-close" aria-label="Close chat" class="grid h-8 w-8 place-items-center rounded-full text-[var(--color-muted)] hover:bg-[oklch(0.8_0.165_162/0.12)] hover:text-[var(--color-aurora)]">✕</button>
+  </div>
+
+  <!-- messages -->
+  <div id="chat-log" class="flex-1 space-y-3 overflow-y-auto px-4 py-4 text-sm">
+    <div class="max-w-[85%] rounded-2xl rounded-tl-sm border border-[oklch(0.32_0.02_160/0.4)] bg-[var(--color-surface)] px-3.5 py-2.5 text-[var(--color-body)]">
+      Hi! I'm {SITE.name.split(" ")[0]}'s AI assistant 👋 Ask me anything about his skills, projects, or availability.
+    </div>
+    <div id="chat-suggestions" class="flex flex-wrap gap-2 pt-1">
+      {
+        suggestions.map((s) => (
+          <button class="chat-suggest rounded-full border border-[oklch(0.8_0.165_162/0.4)] bg-[oklch(0.8_0.165_162/0.08)] px-3 py-1.5 text-xs font-medium text-[var(--color-aurora)] transition-colors hover:bg-[oklch(0.8_0.165_162/0.18)]">
+            {s}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- input -->
+  <form id="chat-form" class="flex items-center gap-2 border-t border-[oklch(0.32_0.02_160/0.5)] bg-[var(--color-surface)] px-3 py-3">
+    <input
+      id="chat-input"
+      type="text"
+      autocomplete="off"
+      placeholder="Type your message…"
+      class="min-w-0 flex-1 rounded-full border border-[oklch(0.32_0.02_160/0.6)] bg-[var(--color-bg)] px-4 py-2.5 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-muted)] outline-none focus:border-[oklch(0.8_0.165_162/0.7)]"
+    />
+    <button type="submit" aria-label="Send message" class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[var(--color-aurora)] text-[oklch(0.13_0.02_162)] transition-transform hover:scale-105">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4l17.45-7.48a1 1 0 000-1.84L3.4 3.6a1 1 0 00-1.39 1.2L4 11l11 1-11 1-1.99 6.2a1 1 0 001.39 1.2z"/></svg>
+    </button>
+  </form>
+</div>
+
+<script is:inline>
+  (() => {
+    const launch = document.getElementById("chat-launch");
+    const panel = document.getElementById("chat-panel");
+    const closeBtn = document.getElementById("chat-close");
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("chat-input");
+    const log = document.getElementById("chat-log");
+    if (!launch || !panel) return;
+
+    const history = [];
+
+    const open = () => {
+      panel.hidden = false;
+      requestAnimationFrame(() => {
+        panel.style.opacity = "1";
+        panel.style.transform = "scale(1)";
+      });
+      launch.style.display = "none";
+      setTimeout(() => input && input.focus(), 150);
+    };
+    const close = () => {
+      panel.style.opacity = "0";
+      panel.style.transform = "scale(0.95)";
+      setTimeout(() => {
+        panel.hidden = true;
+        launch.style.display = "flex";
+      }, 200);
+    };
+
+    launch.addEventListener("click", open);
+    closeBtn && closeBtn.addEventListener("click", close);
+    addEventListener("keydown", (e) => { if (e.key === "Escape" && !panel.hidden) close(); });
+
+    const bubble = (role, text) => {
+      const div = document.createElement("div");
+      div.className =
+        role === "user"
+          ? "ml-auto max-w-[85%] rounded-2xl rounded-tr-sm bg-[var(--color-aurora)] px-3.5 py-2.5 text-[oklch(0.13_0.02_162)] font-medium"
+          : "max-w-[85%] rounded-2xl rounded-tl-sm border border-[oklch(0.32_0.02_160/0.4)] bg-[var(--color-surface)] px-3.5 py-2.5 text-[var(--color-body)]";
+      div.textContent = text;
+      log.appendChild(div);
+      log.scrollTop = log.scrollHeight;
+      return div;
+    };
+
+    const send = async (text) => {
+      const sug = document.getElementById("chat-suggestions");
+      if (sug) sug.remove();
+      bubble("user", text);
+      history.push({ role: "user", content: text });
+      const typing = bubble("assistant", "…");
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: history }),
+        });
+        if (!res.ok) throw new Error("bad status " + res.status);
+        const data = await res.json();
+        const reply = (data && data.reply) || "Sorry, I couldn't generate a reply.";
+        typing.textContent = reply;
+        history.push({ role: "assistant", content: reply });
+      } catch (err) {
+        typing.textContent =
+          "I'm having trouble connecting right now. You can reach Divish directly at " +
+          "divishraj05@gmail.com.";
+      }
+      log.scrollTop = log.scrollHeight;
+    };
+
+    form && form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const v = (input.value || "").trim();
+      if (!v) return;
+      input.value = "";
+      send(v);
+    });
+
+    log.addEventListener("click", (e) => {
+      const t = e.target;
+      if (t && t.classList && t.classList.contains("chat-suggest")) send(t.textContent.trim());
+    });
+  })();
+</script>

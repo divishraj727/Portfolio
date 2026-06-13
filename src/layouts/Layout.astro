@@ -1,0 +1,209 @@
+---
+import "../styles/global.css";
+import { SITE, KEYWORDS } from "../config";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Path to the social share image inside /public (1200×630). */
+  ogImage?: string;
+}
+
+const {
+  title = `${SITE.name} — ${SITE.role} | Portfolio Website`,
+  description = `${SITE.name} is a ${SITE.role.toLowerCase()} based in ${SITE.location}. Explore the developer portfolio of ${SITE.name}: full stack web apps, AI-powered projects, skills and contact details.`,
+  ogImage = "/og-image.jpg",
+} = Astro.props;
+
+// Canonical + absolute URLs (Astro.site comes from astro.config.mjs `site`).
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImageUrl = new URL(ogImage, Astro.site).href;
+
+// Structured data — helps Google understand who you are (rich results / knowledge panel).
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: SITE.name,
+  url: SITE.url,
+  image: new URL(SITE.photo, Astro.site).href,
+  jobTitle: SITE.role,
+  description: `${SITE.name} is a ${SITE.role} based in ${SITE.location} with 2+ years of experience building and deploying scalable web applications using Python Django and ReactJS, with strong AWS, Docker and Kubernetes expertise. RHCE and CCNA certified, M.Tech from RVCE Bangalore.`,
+  email: `mailto:${SITE.email}`,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Bangalore",
+    addressRegion: "Karnataka",
+    addressCountry: "IN",
+  },
+  alumniOf: [
+    { "@type": "CollegeOrUniversity", name: "RV College of Engineering, Bangalore" },
+    { "@type": "CollegeOrUniversity", name: "JNNCE, Shimoga" },
+  ],
+  knowsAbout: [
+    "Full Stack Development",
+    "React",
+    "Django",
+    "AWS",
+    "Docker",
+    "Kubernetes",
+    "DevOps",
+  ],
+  sameAs: [SITE.github, SITE.linkedin, SITE.twitter].filter(Boolean),
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: `${SITE.name} — Portfolio`,
+  url: SITE.url,
+  author: { "@type": "Person", name: SITE.name },
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary SEO -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={KEYWORDS.join(", ")} />
+    <meta name="author" content={SITE.name} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#101211" />
+
+    <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={`${SITE.name} — Portfolio`} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${SITE.name} — ${SITE.role} portfolio`} />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    {SITE.twitterHandle && <meta name="twitter:creator" content={`@${SITE.twitterHandle}`} />}
+
+    <!-- Icons (replace via https://logofa.st/) -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Fonts: Sora (display), Manrope (body), JetBrains Mono (labels) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Martian+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- If JS is disabled, show all content immediately (no hidden reveals) -->
+    <noscript>
+      <style>
+        .reveal, .reveal-blur, .clip-sweep, .pop {
+          opacity: 1 !important;
+          transform: none !important;
+          filter: none !important;
+          clip-path: none !important;
+        }
+      </style>
+    </noscript>
+
+    <!-- Structured data -->
+    <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-[var(--color-aurora)] focus:px-4 focus:py-2 focus:text-[oklch(0.13_0.02_162)]"
+      >Skip to content</a
+    >
+
+    <!-- scroll progress line -->
+    <div id="scroll-progress" class="fixed left-0 top-0 z-[55] h-0.5 w-0 bg-[var(--color-aurora)] shadow-[0_0_12px_oklch(0.8_0.165_162/0.8)]"></div>
+
+    <slot />
+
+    <!-- Scroll motion: reveal + stagger + count-up + parallax + progress -->
+    <script is:inline>
+      // 1) reveal / pop on scroll
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add("is-visible");
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { threshold: 0.12 },
+      );
+      document.querySelectorAll(".reveal, .pop, .reveal-blur, .clip-sweep").forEach((el) => io.observe(el));
+
+      // 2) count-up numbers (elements with [data-count])
+      const fmt = (n, suffix) => n.toLocaleString() + (suffix || "");
+      const counters = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            const el = e.target;
+            const target = parseFloat(el.dataset.count);
+            const suffix = el.dataset.suffix || "";
+            const dec = (el.dataset.count.split(".")[1] || "").length;
+            const start = performance.now();
+            const dur = 1400;
+            const tick = (now) => {
+              const p = Math.min((now - start) / dur, 1);
+              const eased = 1 - Math.pow(1 - p, 3);
+              const val = target * eased;
+              el.textContent = (dec ? val.toFixed(dec) : Math.round(val).toLocaleString()) + suffix;
+              if (p < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+            counters.unobserve(el);
+          }
+        },
+        { threshold: 0.5 },
+      );
+      document.querySelectorAll("[data-count]").forEach((el) => counters.observe(el));
+
+      // 3) scroll progress bar + parallax (rAF-throttled)
+      const bar = document.getElementById("scroll-progress");
+      const parallax = [...document.querySelectorAll("[data-parallax]")];
+      let ticking = false;
+      const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const h = document.documentElement;
+          const max = h.scrollHeight - h.clientHeight;
+          if (bar) bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+          for (const el of parallax) {
+            const speed = parseFloat(el.dataset.parallax) || 0.2;
+            const rect = el.getBoundingClientRect();
+            const offset = (rect.top + rect.height / 2 - h.clientHeight / 2) * -speed;
+            el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
+          }
+          ticking = false;
+        });
+      };
+      addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    </script>
+
+    <slot name="end" />
+  </body>
+</html>

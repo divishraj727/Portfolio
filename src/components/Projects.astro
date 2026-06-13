@@ -1,0 +1,252 @@
+---
+import { PROJECTS } from "../config";
+---
+
+<section id="projects" class="spiral relative">
+  <!-- Heading lives in normal flow above the spiral stage -->
+  <div class="mx-auto max-w-6xl px-6 pt-[clamp(4rem,10vh,8rem)]">
+    <div class="reveal">
+      <p class="hud mb-4">SPIRAL VIEW · SCROLL TO ORBIT</p>
+      <h2 class="display text-[clamp(2.2rem,7vw,4.5rem)]">
+        Project<br /><span class="text-[var(--color-aurora)]">vortex</span>
+      </h2>
+      <p class="mt-5 max-w-md text-[var(--color-muted)]">
+        Four live, deployed applications, orbiting a singularity. Scroll to pull each into focus, then open it.
+      </p>
+    </div>
+  </div>
+
+  <!-- Tall track; the stage sticks while you scroll through the spiral -->
+  <div class="spiral-track">
+    <div class="spiral-stage" aria-label="Projects, presented as an interactive spiral">
+      <div class="spiral-core" aria-hidden="true"></div>
+      {
+        PROJECTS.map((p, i) => (
+          <article class="spiral-card" data-spiral-card data-i={i}>
+            <a
+              href={p.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group block overflow-hidden rounded-2xl border border-[oklch(0.32_0.02_160/0.5)] bg-[var(--color-surface)] shadow-[0_24px_60px_-24px_oklch(0_0_0/0.9)]"
+              aria-label={`Open ${p.title} live`}
+            >
+              <div class="flex items-center gap-2 border-b border-[oklch(0.32_0.02_160/0.4)] bg-[var(--color-surface-2)] px-4 py-2.5">
+                <span class="h-2.5 w-2.5 rounded-full bg-[oklch(0.55_0.18_25)]" aria-hidden="true" />
+                <span class="h-2.5 w-2.5 rounded-full bg-[oklch(0.75_0.14_85)]" aria-hidden="true" />
+                <span class="h-2.5 w-2.5 rounded-full bg-[oklch(0.7_0.17_150)]" aria-hidden="true" />
+                <span class="ml-3 truncate font-mono text-[0.66rem] text-[var(--color-muted)]">
+                  {p.url.replace("https://", "")}
+                </span>
+              </div>
+              <img
+                src={p.image}
+                alt={`${p.title} interface screenshot`}
+                width="1280"
+                height="900"
+                loading="lazy"
+                class="aspect-[1280/820] w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              />
+              <div class="p-5">
+                <h3 class="font-display text-lg font-bold text-[var(--color-ink)]">{p.title}</h3>
+                <p class="mt-2 text-sm leading-relaxed text-[var(--color-body)]">{p.description}</p>
+                <ul class="mt-4 flex flex-wrap gap-2">
+                  {p.tags.map((t) => (
+                    <li class="rounded-md border border-[oklch(0.32_0.02_160/0.45)] px-2 py-0.5 font-mono text-[0.62rem] text-[var(--color-muted)]">
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+                <span class="mt-4 inline-flex items-center gap-1.5 font-mono text-xs text-[var(--color-aurora)]">
+                  Open live app
+                  <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">↗</span>
+                </span>
+              </div>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+
+    <!-- progress dots, fixed within the sticky stage -->
+    <div class="spiral-dots" aria-hidden="true">
+      {PROJECTS.map(() => <span class="spiral-dot"></span>)}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── Default (no JS / reduced motion): clean responsive grid ── */
+  .spiral-track {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: 1.5rem;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+  .spiral-stage { display: contents; }
+  .spiral-core,
+  .spiral-dots { display: none; }
+  .spiral-card { width: 100%; }
+
+  /* ── JS spiral mode ───────────────────────────────────────── */
+  .spiral.is-spiral .spiral-track {
+    display: block;
+    height: 360vh;
+    padding: 0;
+    max-width: none;
+  }
+  .spiral.is-spiral .spiral-stage {
+    display: block;
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: clip;
+    perspective: 1400px;
+  }
+  .spiral.is-spiral .spiral-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: clamp(210px, 24vw, 300px);
+    margin: 0;
+    will-change: transform, opacity;
+    transform: translate(-50%, -50%);
+  }
+  /* compact in the vortex: image + title only (full text stays in DOM for SEO,
+     and renders in the no-JS grid fallback) */
+  .spiral.is-spiral .spiral-card .p-5 { padding: 0.7rem 0.95rem 0.85rem; }
+  .spiral.is-spiral .spiral-card .p-5 p,
+  .spiral.is-spiral .spiral-card .p-5 ul { display: none; }
+  .spiral.is-spiral .spiral-card .p-5 h3 { font-size: 1rem; }
+  .spiral.is-spiral .spiral-card .p-5 span { margin-top: 0.6rem; }
+  /* the focused card's link should not lift on hover (it's already front) */
+  .spiral.is-spiral .spiral-card a { transition: box-shadow 0.3s ease; }
+
+  /* radiant singularity at the centre of the vortex */
+  .spiral.is-spiral .spiral-core {
+    display: block;
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    height: 16rem;
+    width: 16rem;
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    background: radial-gradient(circle, oklch(0.8 0.165 162 / 0.4), oklch(0.55 0.12 162 / 0.12) 45%, transparent 70%);
+    pointer-events: none;
+    animation: corePulse 5s ease-in-out infinite;
+  }
+  @keyframes corePulse {
+    0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+  }
+
+  .spiral.is-spiral .spiral-dots {
+    display: flex;
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 0.55rem;
+    z-index: 2000;
+  }
+  .spiral-dot {
+    height: 0.4rem;
+    width: 0.4rem;
+    border-radius: 999px;
+    background: oklch(0.32 0.02 160 / 0.9);
+    transition: background 0.3s ease, width 0.3s ease;
+  }
+  .spiral-dot.active {
+    width: 1.4rem;
+    background: var(--color-aurora);
+    box-shadow: 0 0 12px oklch(0.8 0.165 162 / 0.7);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spiral-core { animation: none; }
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>(".spiral");
+  const track = section?.querySelector<HTMLElement>(".spiral-track");
+  const stage = section?.querySelector<HTMLElement>(".spiral-stage");
+  const dots = section ? Array.from(section.querySelectorAll<HTMLElement>(".spiral-dot")) : [];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (section && track && stage && !reduce) {
+    section.classList.add("is-spiral");
+
+    // Real project cards (kept for SEO). Clone once for a denser, "infinite" vortex.
+    const real = Array.from(stage.querySelectorAll<HTMLElement>("[data-spiral-card]"));
+    const realCount = real.length;
+    const nodes: HTMLElement[] = [...real];
+    real.forEach((card) => {
+      const clone = card.cloneNode(true) as HTMLElement;
+      clone.setAttribute("aria-hidden", "true");
+      clone.dataset.clone = "1";
+      clone.querySelectorAll("a").forEach((a) => a.setAttribute("tabindex", "-1"));
+      stage.appendChild(clone);
+      nodes.push(clone);
+    });
+    const N = nodes.length;
+
+    const STEP = (46 * Math.PI) / 180; // angular gap between nodes
+    const K = 0.7; // radius/scale falloff per step toward the core
+    const START = Math.PI / 2; // focus node sits just below centre, fully in view
+
+    let baseR = 200;
+    const measure = () => {
+      baseR = Math.min(stage.clientWidth, stage.clientHeight) * 0.22;
+    };
+
+    let progress = 0;
+    const layout = () => {
+      for (let i = 0; i < N; i++) {
+        const el = nodes[i];
+        // relative position along the spiral, recycled into a visible window
+        let t = i - progress;
+        t = (((t + 1.5) % N) + N) % N - 1.5;
+
+        const r = baseR * Math.pow(K, t);
+        const a = START + t * STEP;
+        const x = Math.cos(a) * r;
+        const y = Math.sin(a) * r;
+        const s = Math.pow(K, t);
+
+        let op = 1;
+        if (t < -0.3) op = Math.max(0, 1 + (t + 0.3) / 0.7); // fade huge ones exiting front
+        if (t > N - 3) op = Math.max(0, (N - 1.5 - t) / 1.5); // fade tiny ones near recycle seam
+
+        el.style.transform = `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${s.toFixed(3)})`;
+        el.style.opacity = op.toFixed(3);
+        el.style.zIndex = String(Math.round(1000 - t * 60));
+        el.style.pointerEvents = t > -0.5 && t < 0.6 ? "auto" : "none";
+      }
+      const focus = ((Math.round(progress) % realCount) + realCount) % realCount;
+      dots.forEach((d, i) => d.classList.toggle("active", i === focus));
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const top = track.getBoundingClientRect().top + scrollY; // absolute document offset
+        const span = track.offsetHeight - innerHeight;
+        const p = span > 0 ? (scrollY - top) / span : 0;
+        progress = Math.min(Math.max(p, 0), 1) * (N - 1.6);
+        layout();
+        ticking = false;
+      });
+    };
+
+    measure();
+    layout();
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", () => { measure(); onScroll(); }, { passive: true });
+    onScroll();
+  }
+</script>

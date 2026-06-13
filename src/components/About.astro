@@ -1,0 +1,88 @@
+---
+import { SITE } from "../config";
+---
+
+<section id="about" class="mx-auto max-w-6xl px-6 py-[clamp(4rem,10vh,8rem)]">
+  <div class="grid gap-12 md:grid-cols-[1fr_280px] md:gap-16">
+    <div class="max-w-[65ch]">
+      <h2 class="display reveal text-[clamp(1.9rem,5vw,3.2rem)]">
+        About this <span class="text-[var(--color-aurora)]">portfolio</span>
+      </h2>
+
+      <div class="reveal-blur mt-8 space-y-5 leading-[1.75] text-[var(--color-body)]" style="--d:120ms">
+        <p>
+          Welcome to the official <strong class="font-semibold text-[var(--color-ink)]">{SITE.name} website</strong>,
+          a developer portfolio built to showcase real, production-grade work. I'm
+          <strong class="font-semibold text-[var(--color-ink)]">{SITE.name}</strong>, a {SITE.role.toLowerCase()} based
+          in {SITE.location} with 2+ years of experience designing, building and deploying scalable web
+          applications. This portfolio website is the best place to understand how I think, what I ship,
+          and how I can help turn an idea into a fast, reliable product.
+        </p>
+
+        <p>
+          As a <strong class="font-semibold text-[var(--color-ink)]">full stack developer</strong>, I work across the
+          entire stack: crafting responsive front ends with React, Next.js and modern CSS, and building
+          secure back ends with Python, Django and the Django REST Framework. At Sanadi Technologies I
+          designed and shipped a modular ERP platform end-to-end, with multiple departments, RESTful APIs and
+          a clean React interface, used in real day-to-day business operations.
+        </p>
+
+        <p>
+          What sets this developer portfolio apart is the cloud and DevOps depth behind it. I provision
+          and run complete <strong class="font-semibold text-[var(--color-ink)]">AWS</strong> infrastructure (EC2, S3,
+          RDS, VPC, IAM, Lambda and API Gateway), containerise applications with
+          <strong class="font-semibold text-[var(--color-ink)]">Docker</strong>, orchestrate them on
+          <strong class="font-semibold text-[var(--color-ink)]">Kubernetes</strong> for 99.9% uptime, and automate
+          provisioning with Ansible. I'm a Red Hat Certified Engineer (RHCE) and CISCO CCNA, with a strong
+          Linux, networking and Bash scripting background, so the apps I build don't just look good: they
+          deploy and scale reliably.
+        </p>
+
+        <p>
+          I also love building <strong class="font-semibold text-[var(--color-ink)]">AI-powered web applications</strong>.
+          You can explore that work in the projects section below: EduFlow, an AI learning management
+          system powered by Llama 3.3 that gives every student a 24/7 tutor; ResumeAI, a tool that tailors
+          résumés to boost interview rates and automates job applications; a conversion-focused marketing
+          site for an events business; and a task manager with authentication. Every project on this
+          portfolio is live, so you can click through and try it yourself instead of just reading about it.
+        </p>
+
+        <p>
+          I believe a portfolio should do more than look good. It should rank, load instantly and earn
+          trust. That's why this website is statically generated with Astro for near-instant performance,
+          ships semantic HTML and structured data so search engines understand exactly who I am, and
+          includes proper Open Graph and Twitter meta tags so every shared link looks sharp. If you
+          searched for a <strong class="font-semibold text-[var(--color-ink)]">developer portfolio</strong>, a
+          <strong class="font-semibold text-[var(--color-ink)]">full stack developer portfolio</strong>, or for the
+          <strong class="font-semibold text-[var(--color-ink)]">{SITE.name} portfolio</strong>, you're in the right place.
+        </p>
+
+        <p>
+          Whether you're a recruiter evaluating candidates, a founder who needs an MVP shipped quickly, or
+          a team that wants a fast, modern website that actually ranks on Google, I'd love to talk. I take
+          pride in writing maintainable code, communicating clearly and delivering on time. Browse my
+          experience, skills and projects below, and when something resonates, reach out through the
+          contact section. Thanks for visiting my portfolio website; let's build something worth shipping.
+        </p>
+      </div>
+    </div>
+
+    <aside class="reveal md:pt-24" style="--d:200ms">
+      <div class="relative mx-auto w-56 md:w-full">
+        <div class="absolute -inset-3 rounded-3xl bg-[oklch(0.55_0.12_162/0.25)] blur-2xl" aria-hidden="true"></div>
+        <img
+          src={SITE.photo}
+          alt={`${SITE.name}, ${SITE.role} in Bangalore`}
+          width="340"
+          height="340"
+          loading="lazy"
+          class="relative aspect-square w-full rounded-3xl border border-[oklch(0.8_0.165_162/0.35)] object-cover"
+        />
+        <div class="hud mt-4 space-y-1.5 text-center md:text-left">
+          <p>RHCE · EX294 // CISCO CCNA</p>
+          <p>M.TECH RVCE · BANGALORE</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
