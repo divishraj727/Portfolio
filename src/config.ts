@@ -22,7 +22,7 @@ export const SITE = {
   twitter: "",
   twitterHandle: "",
   tagline:
-    "I build and deploy scalable web applications end-to-end: Django + React on the front, AWS, Docker & Kubernetes on the cloud.",
+    "I turn ideas into fast, reliable web apps, and own them from the first commit to production.",
 } as const;
 
 export const KEYWORDS = [

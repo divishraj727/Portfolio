@@ -15,9 +15,9 @@
   --color-aurora-deep: oklch(0.55 0.12 162);
   --color-solar: oklch(0.6 0.13 70);
 
-  --font-display: "Unbounded", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Martian Mono", ui-monospace, monospace;
+  --font-display: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
 }
 
 /* ── Base ──────────────────────────────────────────────────── */
@@ -54,31 +54,31 @@ h1, h2, h3 {
 
 p { text-wrap: pretty; }
 
-/* Hero name only — the one place uppercase Unbounded is reserved for. */
+/* Hero name — the one place reserved for big uppercase. Geist heavy + tight tracking. */
 .display {
   font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.02;
+  letter-spacing: -0.04em;
+  line-height: 1.0;
   text-transform: uppercase;
 }
 
 /* Section headings — mixed-case, well below the hero name, so hierarchy reads. */
 .section-title {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 600;
   font-size: clamp(1.5rem, 3.6vw, 2.25rem);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.03em;
   line-height: 1.12;
 }
 /* Statement moments (Projects, Contact) — bigger + heavier than a section title,
    but still mixed-case so it never reads as template all-caps. */
 .section-statement {
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 700;
   font-size: clamp(2rem, 5.5vw, 3.4rem);
-  letter-spacing: -0.025em;
-  line-height: 1.04;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
 }
 
 /* Kicker label — the scarce solar accent that breaks the monochrome green. */
