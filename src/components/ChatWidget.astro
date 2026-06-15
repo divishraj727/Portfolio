@@ -90,6 +90,7 @@ const suggestions = [
     if (!launch || !panel) return;
 
     const history = [];
+    let streaming = false;
 
     const open = () => {
       panel.hidden = false;
@@ -113,40 +114,129 @@ const suggestions = [
     closeBtn && closeBtn.addEventListener("click", close);
     addEventListener("keydown", (e) => { if (e.key === "Escape" && !panel.hidden) close(); });
 
+    // Known project links — safe hardcoded URLs, never from LLM
+    const LINKS = [
+      ["Nakshatra Events", "https://nakshatraevents.vercel.app/"],
+      ["Peace Haven", "https://tmpeaceheaven.netlify.app/login"],
+      ["EduFlow", "https://eduflow-house.vercel.app/"],
+      ["ResumeAI", "https://auto-applier-job.vercel.app/"],
+    ];
+
+    const linkify = (text) => {
+      const esc = text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+      return LINKS.reduce((acc, [name, url]) => {
+        return acc.replace(name, `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:var(--color-aurora);text-decoration:underline;text-underline-offset:2px">${name}</a>`);
+      }, esc);
+    };
+
     const bubble = (role, text) => {
       const div = document.createElement("div");
-      div.className =
-        role === "user"
-          ? "ml-auto max-w-[85%] rounded-2xl rounded-tr-sm bg-[var(--color-aurora)] px-3.5 py-2.5 text-[oklch(0.13_0.02_162)] font-medium"
-          : "max-w-[85%] rounded-2xl rounded-tl-sm border border-[oklch(0.32_0.02_160/0.4)] bg-[var(--color-surface)] px-3.5 py-2.5 text-[var(--color-body)]";
-      div.textContent = text;
+      div.className = role === "user"
+        ? "ml-auto max-w-[85%] rounded-2xl rounded-tr-sm bg-[var(--color-aurora)] px-3.5 py-2.5 text-[oklch(0.13_0.02_162)] font-medium"
+        : "max-w-[85%] rounded-2xl rounded-tl-sm border border-[oklch(0.32_0.02_160/0.4)] bg-[var(--color-surface)] px-3.5 py-2.5 text-[var(--color-body)]";
+      if (text) div.textContent = text;
       log.appendChild(div);
       log.scrollTop = log.scrollHeight;
       return div;
     };
 
+    const showFollowups = (items) => {
+      const wrap = document.createElement("div");
+      wrap.className = "flex flex-wrap gap-2 pt-1";
+      items.forEach((q) => {
+        const btn = document.createElement("button");
+        btn.className = "rounded-full border border-[oklch(0.8_0.165_162/0.4)] bg-[oklch(0.8_0.165_162/0.08)] px-3 py-1.5 text-xs font-medium text-[var(--color-aurora)] transition-colors hover:bg-[oklch(0.8_0.165_162/0.18)]";
+        btn.textContent = q;
+        btn.addEventListener("click", () => { wrap.remove(); send(q); });
+        wrap.appendChild(btn);
+      });
+      log.appendChild(wrap);
+      log.scrollTop = log.scrollHeight;
+    };
+
+    const CURSOR_HTML = '<span style="display:inline-block;width:2px;height:0.85em;background:var(--color-aurora);margin-left:2px;vertical-align:middle;animation:blink 0.7s infinite;box-shadow:0 0 8px oklch(0.8 0.165 162/0.8)"></span>';
+
     const send = async (text) => {
+      if (streaming) return;
       const sug = document.getElementById("chat-suggestions");
       if (sug) sug.remove();
       bubble("user", text);
       history.push({ role: "user", content: text });
-      const typing = bubble("assistant", "…");
+
+      const typing = bubble("assistant", "");
+      typing.innerHTML = CURSOR_HTML;
+      streaming = true;
+      if (form) form.style.opacity = "0.6";
+
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ messages: history }),
         });
-        if (!res.ok) throw new Error("bad status " + res.status);
-        const data = await res.json();
-        const reply = (data && data.reply) || "Sorry, I couldn't generate a reply.";
-        typing.textContent = reply;
-        history.push({ role: "assistant", content: reply });
-      } catch (err) {
-        typing.textContent =
-          "I'm having trouble connecting right now. You can reach Divish directly at " +
-          "divishraj05@gmail.com.";
+
+        if (!res.ok) throw new Error("status " + res.status);
+
+        const ct = res.headers.get("content-type") || "";
+
+        if (ct.includes("text/event-stream") && res.body) {
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let buf = "";
+          let full = "";
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buf += decoder.decode(value, { stream: true });
+            const lines = buf.split("\n");
+            buf = lines.pop() ?? "";
+
+            for (const line of lines) {
+              if (!line.startsWith("data: ")) continue;
+              const raw = line.slice(6).trim();
+              if (raw === "[DONE]") continue;
+              try {
+                const token = JSON.parse(raw)?.choices?.[0]?.delta?.content ?? "";
+                if (token) {
+                  full += token;
+                  // Hide FOLLOWUPS line while streaming
+                  const cut = full.indexOf("\nFOLLOWUPS:");
+                  typing.textContent = cut >= 0 ? full.slice(0, cut) : full;
+                  log.scrollTop = log.scrollHeight;
+                }
+              } catch {}
+            }
+          }
+
+          // Parse FOLLOWUPS out of the completed response
+          const cut = full.indexOf("\nFOLLOWUPS:");
+          let display = full.trim();
+          let followups = [];
+          if (cut >= 0) {
+            display = full.slice(0, cut).trim();
+            followups = full.slice(cut + "\nFOLLOWUPS:".length)
+              .split("|").map(s => s.trim()).filter(Boolean).slice(0, 3);
+          }
+
+          typing.innerHTML = linkify(display);
+          history.push({ role: "assistant", content: display });
+          if (followups.length) showFollowups(followups);
+
+        } else {
+          // Fallback for non-streaming JSON response
+          const data = await res.json();
+          const reply = data?.reply || "Sorry, I couldn't generate a reply.";
+          typing.innerHTML = linkify(reply);
+          history.push({ role: "assistant", content: reply });
+        }
+
+      } catch {
+        typing.textContent = "I'm having trouble connecting right now. You can reach Divish directly at divishraj05@gmail.com.";
       }
+
+      streaming = false;
+      if (form) form.style.opacity = "";
       log.scrollTop = log.scrollHeight;
     };
 
@@ -160,7 +250,7 @@ const suggestions = [
 
     log.addEventListener("click", (e) => {
       const t = e.target;
-      if (t && t.classList && t.classList.contains("chat-suggest")) send(t.textContent.trim());
+      if (t?.classList?.contains("chat-suggest")) send(t.textContent.trim());
     });
 
     // Voice input
