@@ -230,7 +230,24 @@ p { text-wrap: pretty; }
   .pop.is-visible { opacity: 1; transform: none; }
 }
 
+/* ── Typewriter effect ────────────────────────────────── */
+@keyframes typewrite {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@keyframes blink {
+  0%, 49% { border-right: 2px solid var(--color-aurora); }
+  50%, 100% { border-right: 2px solid transparent; }
+}
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid var(--color-aurora);
+  white-space: nowrap;
+  animation: typewrite 2.8s steps(40, end), blink 0.7s infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .typewriter { animation: none; border-right: none; }
   .ticker-track { animation: none; }
   html { scroll-behavior: auto; }
 }
