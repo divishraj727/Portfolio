@@ -262,14 +262,16 @@ const suggestions = [
     } else {
       // Navigation command map
       // scroll: short phrases OK | open: requires explicit nav verb (prevents accidental tab opens)
+      // Stems used (not plurals) so "skill" matches both "skill" and "skills" via t.includes()
       const scrollTo = (id) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
       const COMMANDS = [
-        // Scrolls — triggered by short phrase or nav verb
-        { match: ["projects", "project", "your work", "show me work", "work"],   scroll: "#projects" },
-        { match: ["about", "who are you", "who is divish"],           scroll: "#about" },
-        { match: ["experience", "background", "career"],              scroll: "#experience" },
-        { match: ["skills", "skill", "tech stack", "tooling", "technologies"], scroll: "#skills" },
-        { match: ["contact", "get in touch", "hire", "email"],        scroll: "#contact" },
+        // Scrolls — triggered by short phrase, nav verb, or "section/page" keyword
+        { match: ["project", "portfolio", "your work", "show me work", "work"],       scroll: "#projects" },
+        { match: ["about", "who are you", "who is divish"],                           scroll: "#about" },
+        { match: ["experience", "background", "career", "education", "qualification", "certif", "cert"], scroll: "#experience" },
+        { match: ["skill", "tech stack", "tooling", "technolog"],                     scroll: "#skills" },
+        { match: ["contact", "get in touch", "hire", "email"],                        scroll: "#contact" },
+        { match: ["top", "home", "back to top", "start", "beginning"],                scroll: "#top" },
         // External opens — require explicit nav verb only (no short-phrase shortcut)
         // ResumeAI MUST come before resume/cv so "resumeai" doesn't match the PDF entry
         { match: ["resume ai", "resumeai", "job applier", "auto apply"], open: "https://auto-applier-job.vercel.app/" },
