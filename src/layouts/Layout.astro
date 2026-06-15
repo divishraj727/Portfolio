@@ -218,6 +218,26 @@ const websiteSchema = {
       };
       addEventListener("scroll", onScroll, { passive: true });
       onScroll();
+
+      // 4) typewriter effect: trigger after page fully loads so users see the animation
+      const startTypewriter = () => {
+        const name = document.getElementById("hero-name");
+        const tagline = document.getElementById("hero-tagline");
+        const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (!reduce) {
+          if (name) {
+            setTimeout(() => name.classList.add("typewriter"), 300);
+          }
+          if (tagline) {
+            setTimeout(() => tagline.classList.add("typewriter"), 1200);
+          }
+        }
+      };
+
+      addEventListener("load", startTypewriter, { once: true });
+      // fallback: if load fires before this script, call manually
+      if (document.readyState === "complete") startTypewriter();
     </script>
 
     <slot name="end" />
