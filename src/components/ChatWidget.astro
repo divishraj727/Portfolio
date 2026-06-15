@@ -164,13 +164,14 @@ const suggestions = [
       setTimeout(close, 1100);
       const go = (frac) => {
         const top = sec.getBoundingClientRect().top + window.scrollY + (sec.offsetHeight - window.innerHeight) * frac;
-        window.scrollTo({ top, behavior: "instant" });
+        window.scrollTo({ top, behavior: "smooth" });   // smooth so camera glides between nodes
       };
-      setTimeout(() => go(0),     1400);   // overview
-      setTimeout(() => go(0.125), 2800);   // React      (1.4 s view)
-      setTimeout(() => go(0.375), 5800);   // Django     (3 s each)
-      setTimeout(() => go(0.625), 8800);   // PostgreSQL
-      setTimeout(() => go(0.875), 11800);  // Kubernetes
+      setTimeout(() => go(0),     1400);   // overview  (1.4 s to land on section)
+      setTimeout(() => go(0.125), 2800);   // React     (1.4 s overview view)
+      setTimeout(() => go(0.375), 6800);   // Django    (4 s per beat)
+      setTimeout(() => go(0.625), 10800);  // PostgreSQL
+      setTimeout(() => go(0.875), 14800);  // Kubernetes
+      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 19800); // return home (+5 s)
     };
 
     // ── Local-command patterns (handled client-side, no API call) ─────────────
@@ -370,12 +371,17 @@ const suggestions = [
         // Auto-send whatever's in the input if routing didn't handle it
         if (input.value.trim()) { const v = input.value.trim(); input.value = ""; send(v); }
       };
+      // Normalise common ASR misrecognitions of "ERP" before routing
+      const normalizeASR = (t) =>
+        t.replace(/\b(?:air\s*r\s*p|a\s*i\s*r\s*p|ear\s*r?\s*p|e\s*r\s*p|aierp|yeirp|ye\s*r\s*p|air\s*p|a\.r\.p|e\.r\.p)\b/gi, "erp");
+
       rec.onresult = (e) => {
         const last = e.results[e.results.length - 1];
         if (!last.isFinal) { input.value = last[0].transcript; return; }
         const said = last[0].transcript;
-        if (route(said)) { input.value = ""; rec.stop(); }
-        else { input.value = said; }
+        const normalized = normalizeASR(said);
+        if (route(normalized)) { input.value = ""; rec.stop(); }
+        else { input.value = said; } // show original if no route matched
       };
       rec.onerror = () => { listening = false; micPing.classList.add("hidden"); mic.style.color = ""; };
     }
