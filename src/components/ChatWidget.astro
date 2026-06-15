@@ -297,7 +297,8 @@ const suggestions = [
         const isShort = t.split(" ").length <= 3;
         const hit = COMMANDS.find(c => c.match.some(m => t.includes(m)));
         if (!hit) return false;
-        if (hit.scroll && (hasNavVerb || isShort)) {
+        const saysSection = /\b(section|page)\b/.test(t);
+        if (hit.scroll && (hasNavVerb || isShort || saysSection)) {
           scrollTo(hit.scroll); toast("→ " + t); return true;
         }
         if (hit.open && hasNavVerb) {
