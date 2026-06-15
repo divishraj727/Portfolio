@@ -23,31 +23,34 @@ import { PROJECTS } from "../config";
       {
         PROJECTS.map((p, i) => (
           <article class="spiral-card" data-spiral-card data-i={i}>
-            <a
-              href={p.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="group block overflow-hidden rounded-2xl border border-[oklch(0.42_0.03_160/0.9)] bg-[var(--color-surface)] shadow-[0_30px_70px_-20px_oklch(0_0_0/0.95)] ring-1 ring-[oklch(0_0_0/0.5)]"
-              aria-label={`Open ${p.title} live`}
-            >
-              <div class="flex items-center gap-2 border-b border-[oklch(0.32_0.02_160/0.4)] bg-[var(--color-surface-2)] px-4 py-2.5">
-                <span class="h-2.5 w-2.5 rounded-full bg-[oklch(0.55_0.18_25)]" aria-hidden="true" />
-                <span class="h-2.5 w-2.5 rounded-full bg-[oklch(0.75_0.14_85)]" aria-hidden="true" />
-                <span class="h-2.5 w-2.5 rounded-full bg-[oklch(0.7_0.17_150)]" aria-hidden="true" />
-                <span class="ml-3 truncate font-mono text-[0.66rem] text-[var(--color-muted)]">
-                  {p.url.replace("https://", "")}
-                </span>
-              </div>
-              <img
-                src={p.image}
-                alt={`${p.title} interface screenshot`}
-                width="1280"
-                height="900"
-                loading="lazy"
-                class="aspect-[1280/820] w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-              />
+            <div class="card-inner group block overflow-hidden rounded-2xl border border-[oklch(0.42_0.03_160/0.9)] bg-[var(--color-surface)] shadow-[0_30px_70px_-20px_oklch(0_0_0/0.95)] ring-1 ring-[oklch(0_0_0/0.5)]">
+              <a
+                href={p.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="block"
+                aria-label={`Open ${p.title} live`}
+              >
+                <div class="flex items-center gap-2 border-b border-[oklch(0.32_0.02_160/0.4)] bg-[var(--color-surface-2)] px-4 py-2.5">
+                  <span class="h-2.5 w-2.5 rounded-full bg-[oklch(0.55_0.18_25)]" aria-hidden="true" />
+                  <span class="h-2.5 w-2.5 rounded-full bg-[oklch(0.75_0.14_85)]" aria-hidden="true" />
+                  <span class="h-2.5 w-2.5 rounded-full bg-[oklch(0.7_0.17_150)]" aria-hidden="true" />
+                  <span class="ml-3 truncate font-mono text-[0.66rem] text-[var(--color-muted)]">
+                    {p.url.replace("https://", "")}
+                  </span>
+                </div>
+                <img
+                  src={p.image}
+                  alt={`${p.title} interface screenshot`}
+                  width="1280"
+                  height="900"
+                  loading="lazy"
+                  class="aspect-[1280/820] w-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
+              </a>
               <div class="p-5">
                 <h3 class="font-display text-lg font-bold text-[var(--color-ink)]">{p.title}</h3>
+                <p class="card-role mt-1.5 text-[0.8rem] leading-relaxed text-[var(--color-solar)]">{p.role}</p>
                 <p class="mt-2 text-sm leading-relaxed text-[var(--color-body)]">{p.description}</p>
                 <ul class="mt-4 flex flex-wrap gap-2">
                   {p.tags.map((t) => (
@@ -56,12 +59,19 @@ import { PROJECTS } from "../config";
                     </li>
                   ))}
                 </ul>
-                <span class="mt-4 inline-flex items-center gap-1.5 font-mono text-xs text-[var(--color-aurora)]">
-                  Open live app
-                  <span aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">↗</span>
-                </span>
+                <div class="card-links mt-4 flex flex-wrap items-center gap-4">
+                  <a
+                    href={p.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-1.5 font-mono text-xs text-[var(--color-aurora)] hover:underline"
+                  >
+                    Open live app
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                </div>
               </div>
-            </a>
+            </div>
           </article>
         ))
       }
@@ -108,20 +118,28 @@ import { PROJECTS } from "../config";
     position: absolute;
     top: 50%;
     left: 50%;
-    width: clamp(170px, 44vw, 300px);
+    width: clamp(168px, 27vw, 290px);
     margin: 0;
     will-change: transform, opacity;
     transform: translate(-50%, -50%);
   }
-  /* compact in the vortex: image + title only (full text stays in DOM for SEO,
-     and renders in the no-JS grid fallback) */
+  /* compact in the vortex: image + title only by default (full text stays in DOM
+     for SEO, and renders in the no-JS grid fallback) */
   .spiral.is-spiral .spiral-card .p-5 { padding: 0.7rem 0.95rem 0.85rem; }
-  .spiral.is-spiral .spiral-card .p-5 p,
-  .spiral.is-spiral .spiral-card .p-5 ul { display: none; }
+  .spiral.is-spiral .spiral-card .p-5 > p,
+  .spiral.is-spiral .spiral-card .p-5 ul,
+  .spiral.is-spiral .spiral-card .p-5 .card-links { display: none; }
   .spiral.is-spiral .spiral-card .p-5 h3 { font-size: 1rem; }
-  .spiral.is-spiral .spiral-card .p-5 span { margin-top: 0.6rem; }
-  /* the focused card's link should not lift on hover (it's already front) */
-  .spiral.is-spiral .spiral-card a { transition: box-shadow 0.3s ease; }
+  /* the focused card surfaces its live link (role + tags stay in the DOM for the
+     no-JS grid + SEO, but the vortex card itself stays clean: image + title + link) */
+  .spiral.is-spiral .spiral-card.focused .p-5 .card-links { display: flex; }
+  .spiral.is-spiral .card-inner { transition: box-shadow 0.4s ease, border-color 0.4s ease; }
+  /* the card nearest the focus point gets an aurora ring so it reads as "in front" */
+  .spiral.is-spiral .spiral-card.focused .card-inner {
+    border-color: oklch(0.8 0.165 162 / 0.7);
+    box-shadow: 0 30px 70px -20px oklch(0 0 0 / 0.95), 0 0 0 1px oklch(0.8 0.165 162 / 0.5),
+      0 0 60px oklch(0.8 0.165 162 / 0.28);
+  }
 
   /* radiant singularity at the centre of the vortex */
   .spiral.is-spiral .spiral-core {
@@ -196,18 +214,32 @@ import { PROJECTS } from "../config";
     }
     const N = nodes.length;
 
-    const STEP = (100 * Math.PI) / 180; // wide, non-repeating angle → a clear orbit, not a stack
-    const K = 0.78; // depth falloff — cards visibly recede toward the core
+    const STEP = (112 * Math.PI) / 180; // wide, non-repeating angle → a clear orbit, not a stack
+    const K = 0.72; // depth falloff — non-focused cards recede + shrink faster, less overlap
     const START = Math.PI / 2; // focus node sits just below centre, fully in view
     const MAX_PROGRESS = realCount * 2; // two full loops over the scroll track
 
     let baseR = 220;
+    let yShift = 0;
     const measure = () => {
-      baseR = Math.min(stage.clientWidth, stage.clientHeight) * 0.3;
+      // cap the radius so big screens don't fling cards to the edges …
+      baseR = Math.min(Math.min(stage.clientWidth, stage.clientHeight) * 0.32, 250);
+      // … and lift the whole vortex up, since the focus node sits a full baseR
+      // below centre (START = π/2). Without this the front card runs off the bottom.
+      yShift = -baseR * 0.58;
     };
 
     let progress = 0;
     const layout = () => {
+      // find the node closest to the focus point (smallest |t|) so exactly one reads as "in front"
+      let focusNode = -1;
+      let focusDist = Infinity;
+      for (let i = 0; i < N; i++) {
+        let t = i - progress;
+        t = (((t + 2) % N) + N) % N - 2;
+        if (Math.abs(t) < focusDist) { focusDist = Math.abs(t); focusNode = i; }
+      }
+
       for (let i = 0; i < N; i++) {
         const el = nodes[i];
         // relative position along the spiral, recycled into a wide visible window
@@ -217,17 +249,20 @@ import { PROJECTS } from "../config";
         const r = baseR * Math.pow(K, t);
         const a = START + t * STEP;
         const x = Math.cos(a) * r;
-        const y = Math.sin(a) * r;
+        const y = Math.sin(a) * r + yShift;
         const s = Math.pow(K, t);
 
+        // dim everything that isn't the focus so the front card clearly leads
         let op = 1;
-        if (t < -0.4) op = Math.max(0, 1 + (t + 0.4) / 1.0); // fade huge ones entering/exiting front
-        if (t > 4.5) op = Math.max(0, (6.0 - t) / 1.5); // fade small ones into the core
+        if (t < -0.3) op = Math.max(0, 1 + (t + 0.3) / 0.6); // fade huge ones exiting toward the viewer
+        else if (t > 0.3) op = Math.max(0.3, 1 - (t - 0.3) * 0.26); // receding cards dim back
+        if (t > 4.2) op = Math.max(0, (5.6 - t) / 1.4); // fade the smallest into the core
 
         el.style.transform = `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${s.toFixed(3)})`;
         el.style.opacity = op.toFixed(3);
         el.style.zIndex = String(Math.round(1000 - t * 60));
         el.style.pointerEvents = t > -0.5 && t < 0.6 ? "auto" : "none";
+        el.classList.toggle("focused", i === focusNode && focusDist < 0.5);
       }
       const focus = ((Math.round(progress) % realCount) + realCount) % realCount;
       dots.forEach((d, i) => d.classList.toggle("active", i === focus));

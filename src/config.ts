@@ -21,6 +21,8 @@ export const SITE = {
   linkedin: "https://www.linkedin.com/in/divish-raj-o-664a1519a",
   twitter: "",
   twitterHandle: "",
+  // Drop the PDF at public/Divish-Raj-O-Resume.pdf for this link to resolve.
+  resume: "/Divish-Raj-O-Resume.pdf",
   tagline:
     "I turn ideas into fast, reliable web apps, and own them from the first commit to production.",
 } as const;
@@ -153,26 +155,28 @@ export const CERTIFICATIONS: Certification[] = [
 // ── Projects (live demos) ───────────────────────────────────
 export type Project = {
   title: string;
+  role: string; // one short, factual line: what you did / your part in it
   description: string;
   features: string[];
   tags: string[];
   url: string;
   image: string; // screenshot in /public/shots
-  repo?: string;
 };
 
 export const PROJECTS: Project[] = [
   {
     title: "EduFlow: AI-Powered LMS",
+    role: "Designed and built end to end — Next.js front end, Llama 3.3 powering AI quizzes, course outlines and a 24/7 tutor chat.",
     description:
-      "A full-featured learning management system powered by Llama 3.3 70B. Instructors generate course outlines and quizzes with AI, while every lesson ships with a 24/7 AI tutor chat. Serving 1,000+ students across 50+ courses.",
-    features: ["AI Quiz Generator", "24/7 AI Tutor", "Course Outline AI", "1,000+ Students"],
+      "A full-featured learning management system powered by Llama 3.3 70B. Instructors generate course outlines and quizzes with AI, while every lesson ships with a 24/7 AI tutor chat.",
+    features: ["AI Quiz Generator", "24/7 AI Tutor", "Course Outline AI", "Lesson Chat"],
     tags: ["Next.js", "AI / LLM", "Llama 3.3", "Tailwind"],
     url: "https://eduflow-house.vercel.app/",
     image: "/shots/eduflow.jpg",
   },
   {
     title: "ResumeAI: Auto Job Applier",
+    role: "Solo full-stack build — an LLM rewrites résumés to fit a listing, plus automation to apply at scale.",
     description:
       "An AI résumé-optimisation tool that rewrites and tailors résumés to boost interview conversion, with automation to streamline applying to job listings at scale.",
     features: ["AI Résumé Rewrite", "Auto Job Apply", "ATS Optimisation", "Interview Boost"],
@@ -182,6 +186,7 @@ export const PROJECTS: Project[] = [
   },
   {
     title: "Nakshatra Events",
+    role: "Client marketing site — designed, built and deployed for a wedding & event-planning business.",
     description:
       "A polished marketing site for a wedding & event-planning business serving Shimoga and Bangalore, focused on showcasing services and converting enquiries.",
     features: ["Service Showcase", "Enquiry Conversion", "Responsive UI", "Fast Load"],
@@ -191,6 +196,7 @@ export const PROJECTS: Project[] = [
   },
   {
     title: "Peace Haven: Task Manager",
+    role: "Personal full-stack project — auth plus task create/track/complete in a clean UI.",
     description:
       "A clean task-management web app with authentication for creating, tracking and completing tasks to keep day-to-day work organised.",
     features: ["Auth & Login", "Task CRUD", "Progress Tracking", "Clean UI"],

@@ -151,7 +151,7 @@ const websiteSchema = {
             }
           }
         },
-        { threshold: 0.01, rootMargin: "0px 0px -8% 0px" },
+        { threshold: 0.01, rootMargin: "0px 0px 18% 0px" },
       );
       revealEls.forEach((el) => io.observe(el));
 
@@ -160,7 +160,7 @@ const websiteSchema = {
       const sweep = () => {
         for (const el of revealEls) {
           if (el.classList.contains("is-visible")) continue;
-          if (el.getBoundingClientRect().top < innerHeight * 0.92) {
+          if (el.getBoundingClientRect().top < innerHeight * 1.1) {
             el.classList.add("is-visible");
             io.unobserve(el);
           }
