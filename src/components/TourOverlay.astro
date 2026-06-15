@@ -69,7 +69,7 @@ const total = TOUR.length;
 
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hasSpeech     = "speechSynthesis" in window;
-    let voiceOn  = hasSpeech;
+    let voiceOn  = false; // off by default — don't startle visitors
     let step     = 0;
     let autoTimer = null;
     let active   = false;
@@ -92,36 +92,52 @@ const total = TOUR.length;
       });
     };
 
-    const clearAuto = () => { clearTimeout(autoTimer); };
+    // Auto-advance is driven by a word-count timer, NOT by speechSynthesis.onend.
+    // Speech runs alongside as decoration — decoupled from pacing so it can't race.
+    const wordDelay = (text) => Math.max(text.split(/\s+/).length * 420, 5000);
 
-    const scheduleNext = (delay) => {
+    const clearAuto = () => clearTimeout(autoTimer);
+
+    const stopSpeech = () => { if (hasSpeech) speechSynthesis.cancel(); };
+
+    const scheduleNext = (text) => {
       clearAuto();
-      autoTimer = setTimeout(() => {
-        if (step < total - 1) { step++; show(); }
-        else endTour();
-      }, delay);
+      if (step >= total - 1) return; // last step: user must click Finish
+      autoTimer = setTimeout(() => { step++; show(); }, wordDelay(text));
     };
 
     const speak = (text) => {
-      if (!hasSpeech || !voiceOn) { scheduleNext(4000); return; }
+      if (!hasSpeech || !voiceOn) return; // speech is decoration only — never drives timing
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.rate = 1.05; u.pitch = 1; u.lang = "en-US";
-      u.onend = () => { if (active) scheduleNext(700); };
-      u.onerror = () => { if (active) scheduleNext(3500); };
       speechSynthesis.speak(u);
     };
 
     const show = () => {
       const s = TOUR[step];
-      labelEl.textContent = s.title;
-      textEl.textContent  = s.text;
-      btnNext.textContent = step === total - 1 ? "Finish ✓" : "Next →";
-      btnBack.disabled    = step === 0;
-      btnBack.style.opacity = step === 0 ? "0.35" : "";
-      updateDots();
+      const myStep = step; // capture so stale timers bail if step changed before they fire
+      // Scroll first, then update caption after scroll settles (prevents label/page desync)
       document.querySelector(s.sel)?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
-      speak(s.text);
+      setTimeout(() => {
+        if (!active || step !== myStep) return; // another nav fired before we settled
+        labelEl.textContent   = s.title;
+        textEl.textContent    = s.text;
+        btnNext.textContent   = step === total - 1 ? "Finish ✓" : "Next →";
+        btnBack.disabled      = step === 0;
+        btnBack.style.opacity = step === 0 ? "0.35" : "";
+        updateDots();
+        speak(s.text);
+        scheduleNext(s.text);
+      }, 300);
+    };
+
+    // Every navigation action clears the pending timer AND stops speech before moving
+    const nav = (newStep) => {
+      clearAuto();
+      stopSpeech();
+      step = newStep;
+      show();
     };
 
     const startTour = () => {
@@ -135,29 +151,31 @@ const total = TOUR.length;
     const endTour = () => {
       active = false;
       clearAuto();
-      if (hasSpeech) speechSynthesis.cancel();
+      stopSpeech();
       overlay.hidden = true;
       localStorage.setItem("divish_tour_seen", "1");
     };
 
-    // Button handlers
-    btnNext  && btnNext.addEventListener("click", () => { clearAuto(); if (step < total - 1) { step++; show(); } else endTour(); });
-    btnBack  && btnBack.addEventListener("click", () => { clearAuto(); if (step > 0) { step--; show(); } });
+    // Button handlers — all go through nav() so cancel is guaranteed
+    btnNext  && btnNext.addEventListener("click", () => {
+      if (step < total - 1) nav(step + 1); else endTour();
+    });
+    btnBack  && btnBack.addEventListener("click", () => { if (step > 0) nav(step - 1); });
     btnSkip  && btnSkip.addEventListener("click", endTour);
     backdrop && backdrop.addEventListener("click", endTour);
     btnVoice && btnVoice.addEventListener("click", () => {
       voiceOn = !voiceOn;
       setVoiceIcon();
-      if (!voiceOn && hasSpeech) { speechSynthesis.cancel(); scheduleNext(3500); }
-      else if (voiceOn) { clearAuto(); speak(TOUR[step].text); }
+      if (!voiceOn) stopSpeech();
+      else speak(TOUR[step].text);
     });
 
     // Keyboard
     addEventListener("keydown", (e) => {
       if (!active) return;
-      if (e.key === "Escape") endTour();
-      if (e.key === "ArrowRight" && step < total - 1) { clearAuto(); step++; show(); }
-      if (e.key === "ArrowLeft"  && step > 0)          { clearAuto(); step--; show(); }
+      if (e.key === "Escape")      endTour();
+      if (e.key === "ArrowRight" && step < total - 1) nav(step + 1);
+      if (e.key === "ArrowLeft"  && step > 0)         nav(step - 1);
     });
 
     // Expose globally so Hero trigger button can call it
