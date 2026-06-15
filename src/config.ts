@@ -17,7 +17,7 @@ export const SITE = {
   phone: "+91 94492 94000",
   // Profile photo lives at public/divish.jpg
   photo: "/divish.jpg",
-  github: "https://github.com/divishrajo",
+  github: "https://github.com/divishraj727",
   linkedin: "https://www.linkedin.com/in/divish-raj-o-664a1519a",
   twitter: "",
   twitterHandle: "",
@@ -46,7 +46,7 @@ export const KEYWORDS = [
 ];
 
 // ── Hero badges (compact row under the tagline) ─────────────
-export const HERO_BADGES = ["Python", "React", "AWS", "DSA", "DB", "AI", "LLMs", "Machine Learning"];
+export const HERO_BADGES = ["Python", "React", "AWS", "Data Structures", "Databases", "AI", "LLMs", "Machine Learning"];
 
 // ── Tech stack (grouped), from résumé ──────────────────────
 export const SKILLS: { group: string; items: string[] }[] = [
