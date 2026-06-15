@@ -240,13 +240,22 @@ const websiteSchema = {
       const startTypewriter = () => {
         if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         const name = document.getElementById("hero-name");
+        const tagline = document.getElementById("hero-tagline");
         if (!name) return;
         const nameText = name.textContent;
+        const taglineText = tagline ? tagline.textContent : "";
         // wait for reveal animation to settle, then start typing
         setTimeout(() => {
-          typewrite(name, nameText, 80, (cursor) => {
-            // blink cursor for 1.5s then remove it
-            setTimeout(() => cursor.remove(), 1500);
+          typewrite(name, nameText, 80, (nameCursor) => {
+            // after name finishes, remove cursor and start tagline
+            setTimeout(() => {
+              nameCursor.remove();
+              if (tagline && taglineText) {
+                typewrite(tagline, taglineText, 18, (taglineCursor) => {
+                  setTimeout(() => taglineCursor.remove(), 1500);
+                });
+              }
+            }, 300);
           });
         }, 600);
       };
