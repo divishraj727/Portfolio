@@ -160,18 +160,20 @@ const suggestions = [
     const erpWalkthrough = () => {
       const sec = document.getElementById("erp-section");
       if (!sec) return;
+      const returnY = window.scrollY; // snapshot where the user was before walkthrough
       bubble("assistant", "Sure! Walking you through every layer — React → Django → PostgreSQL → Kubernetes. Closing chat so you can see the 3D scene.");
       setTimeout(close, 1100);
       const go = (frac) => {
-        const top = sec.getBoundingClientRect().top + window.scrollY + (sec.offsetHeight - window.innerHeight) * frac;
+        const secTop = sec.getBoundingClientRect().top + window.scrollY;
+        const top = secTop + (sec.offsetHeight - window.innerHeight) * frac;
         window.scrollTo({ top, behavior: "smooth" });   // smooth so camera glides between nodes
       };
       setTimeout(() => go(0),     1400);   // overview  (1.4 s to land on section)
       setTimeout(() => go(0.125), 2800);   // React     (1.4 s overview view)
       setTimeout(() => go(0.375), 6800);   // Django    (4 s per beat)
       setTimeout(() => go(0.625), 10800);  // PostgreSQL
-      setTimeout(() => go(0.875), 14800);  // Kubernetes
-      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 19800); // return home (+5 s)
+      setTimeout(() => go(0.875), 14800);  // Kubernetes — dwell 5 s then return
+      setTimeout(() => window.scrollTo({ top: returnY, behavior: "smooth" }), 19800);
     };
 
     // ── Local-command patterns (handled client-side, no API call) ─────────────
