@@ -1,8 +1,8 @@
 ---
 import { SITE } from "../config";
 const suggestions = [
-  "What's Divish's tech stack?",
-  "Tell me about his projects",
+  "Take me on a tour",
+  "Walk me through the ERP architecture",
   "Is he available for hire?",
 ];
 ---
@@ -156,10 +156,45 @@ const suggestions = [
 
     const CURSOR_HTML = '<span style="display:inline-block;width:2px;height:0.85em;background:var(--color-aurora);margin-left:2px;vertical-align:middle;animation:blink 0.7s infinite;box-shadow:0 0 8px oklch(0.8 0.165 162/0.8)"></span>';
 
+    // ── ERP architecture walkthrough ──────────────────────────────────────────
+    const erpWalkthrough = () => {
+      const sec = document.getElementById("erp-section");
+      if (!sec) return;
+      bubble("assistant", "Sure! Walking you through every layer — React → Django → PostgreSQL → Kubernetes. Closing chat so you can see the 3D scene.");
+      setTimeout(close, 1100);
+      const go = (frac) => {
+        const top = sec.getBoundingClientRect().top + window.scrollY + (sec.offsetHeight - window.innerHeight) * frac;
+        window.scrollTo({ top, behavior: "instant" });
+      };
+      setTimeout(() => go(0),     1400);   // overview
+      setTimeout(() => go(0.125), 2800);   // React      (1.4 s view)
+      setTimeout(() => go(0.375), 5800);   // Django     (3 s each)
+      setTimeout(() => go(0.625), 8800);   // PostgreSQL
+      setTimeout(() => go(0.875), 11800);  // Kubernetes
+    };
+
+    // ── Local-command patterns (handled client-side, no API call) ─────────────
+    const TOUR_RE = /\b(take.*tour|start.*tour|portfolio.*tour|tour.*portfolio|give.*tour|begin.*tour|tour)\b/i;
+    const ERP_RE  = /(\berp\b.*(architect|workflow|tech|built|walk|explain|show|how|stack|system)|\b(walk|explain|show|how).*\berp\b|\barchitect\w*.*\berp\b)/i;
+
     const send = async (text) => {
       if (streaming) return;
       const sug = document.getElementById("chat-suggestions");
       if (sug) sug.remove();
+
+      // Handle local commands without hitting the API
+      if (TOUR_RE.test(text)) {
+        bubble("user", text);
+        bubble("assistant", "Launching the portfolio tour now! 🎯");
+        setTimeout(() => { close(); setTimeout(() => window.startPortfolioTour?.(), 400); }, 900);
+        return;
+      }
+      if (ERP_RE.test(text)) {
+        bubble("user", text);
+        erpWalkthrough();
+        return;
+      }
+
       bubble("user", text);
       history.push({ role: "user", content: text });
 
@@ -265,6 +300,13 @@ const suggestions = [
       // Stems used (not plurals) so "skill" matches both "skill" and "skills" via t.includes()
       const scrollTo = (id) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
       const COMMANDS = [
+        // Walkthroughs — fn commands, triggered by short phrase or nav verb
+        { match: ["tour", "portfolio tour", "take me on a tour", "start the tour", "give me a tour"],
+          fn: () => { close(); setTimeout(() => window.startPortfolioTour?.(), 350); } },
+        { match: ["erp", "erp architecture", "erp workflow", "erp tech stack", "erp system",
+                  "architecture walkthrough", "walk me through the erp", "explain the erp",
+                  "show me the architecture", "erp walkthrough"],
+          fn: () => { if (panel.hidden) erpWalkthrough(); else { open(); setTimeout(erpWalkthrough, 400); } } },
         // Scrolls — triggered by short phrase, nav verb, or "section/page" keyword
         { match: ["project", "portfolio", "your work", "show me work", "work"],       scroll: "#projects" },
         { match: ["about", "who are you", "who is divish"],                           scroll: "#about" },
@@ -300,6 +342,9 @@ const suggestions = [
         const hit = COMMANDS.find(c => c.match.some(m => t.includes(m)));
         if (!hit) return false;
         const saysSection = /\b(section|page)\b/.test(t);
+        if (hit.fn && (hasNavVerb || isShort || saysSection || ERP_RE.test(t) || TOUR_RE.test(t))) {
+          hit.fn(); toast("→ " + t); return true;
+        }
         if (hit.scroll && (hasNavVerb || isShort || saysSection)) {
           scrollTo(hit.scroll); toast("→ " + t); return true;
         }

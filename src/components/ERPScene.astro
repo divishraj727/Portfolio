@@ -2,7 +2,7 @@
 const BEATS = [
   { badge: "Architecture",   title: "The full system",      text: "Six services, one production ERP — built, wired, and deployed solo from the first commit." },
   { badge: "Frontend",       title: "React · 5 modules",    text: "Role-based dashboards for HR, inventory, finance, and operations — all in one React SPA." },
-  { badge: "Backend",        title: "Django REST API",       text: "Python handles all business logic, auth, and data validation — one API serving every module." },
+  { badge: "Backend",        title: "Python Django API",     text: "Python handles all business logic, auth, and data validation — one API serving every module." },
   { badge: "Data layer",     title: "PostgreSQL on AWS RDS", text: "Relational store with managed backups, automated failover, and zero-downtime migrations." },
   { badge: "Infrastructure", title: "Docker + Kubernetes",   text: "Containerised and orchestrated — auto-scaling, rolling deployments, 99.9% uptime in prod." },
 ];
@@ -16,7 +16,7 @@ const FOCUS = [null, "react", "django", "postgres", "k8s"];
 <section
   id="erp-section"
   aria-label="ERP system architecture"
-  style="height:600vh;background:var(--color-bg)"
+  style="height:500vh;background:var(--color-bg)"
 >
   <div id="erp-sticky" style="position:sticky;top:0;height:100vh;overflow:hidden">
     <canvas id="erp-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
@@ -61,6 +61,11 @@ const FOCUS = [null, "react", "django", "postgres", "k8s"];
 <script id="erp-beats" type="application/json" set:html={JSON.stringify({ beats: BEATS, focus: FOCUS })}></script>
 
 <style>
+  /* Shorter section on mobile — 4 swipes not 12 */
+  @media (max-width: 767px) {
+    #erp-section { height: 350vh !important; }
+  }
+
   /* Dark-pill label — legible on the glowing green nodes AND the black background */
   .erp-lbl {
     position: absolute; left: 0; top: 0;
@@ -210,10 +215,9 @@ const T = 0.18; // quick-transition fraction
 
 const tl = gsap.timeline({ paused: true });
 
-tl// Beat 0: hold at overview (z=8.5, closer so nodes fill the frame)
-  .to(camera.position, { x: 0, y: -0.5, z: 8.5, ease: "none", duration: D })
-  .to(camTarget,        { x: 0, y: -0.5,         ease: "none", duration: D }, "<")
-// → React
+// No overview dwell — first scroll immediately flies to React.
+// The heading overlay shows the overview state before any scrolling.
+tl// → React
   .to(camera.position, { x: 0, y: 1.2,  z: 5.5, ease: "power3.out", duration: T })
   .to(camTarget,        { x: 0, y: 2,            ease: "power3.out", duration: T }, "<")
   .to(camera.position, { x: 0, y: 1.2,  z: 5.5, ease: "none",       duration: D })
@@ -234,6 +238,9 @@ tl// Beat 0: hold at overview (z=8.5, closer so nodes fill the frame)
   .to(camera.position, { x: 3.8, y: -2.7, z: 5, ease: "none",       duration: D })
   .to(camTarget,        { x: 3,  y: -3,          ease: "none",       duration: D }, "<");
 
+// Set overview state immediately (before ScrollTrigger fires)
+updateBeat(0);
+
 if (!reducedMotion) {
   ScrollTrigger.create({
     trigger: "#erp-section",
@@ -241,7 +248,13 @@ if (!reducedMotion) {
     end: "bottom bottom",
     scrub: 0.7,
     animation: tl,
-    onUpdate: (self) => updateBeat(self.progress * BEATS.length),
+    // progress < 0.02 → overview (heading visible); then 4 equal node beats.
+    onUpdate: (self) => {
+      const beat = self.progress < 0.02
+        ? 0
+        : Math.min(Math.floor(self.progress * 4) + 1, BEATS.length - 1);
+      updateBeat(beat);
+    },
   });
 }
 
