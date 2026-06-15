@@ -265,7 +265,7 @@ const suggestions = [
       const scrollTo = (id) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
       const COMMANDS = [
         // Scrolls — triggered by short phrase or nav verb
-        { match: ["projects", "your work", "show me work", "work"],   scroll: "#projects" },
+        { match: ["projects", "project", "your work", "show me work", "work"],   scroll: "#projects" },
         { match: ["about", "who are you", "who is divish"],           scroll: "#about" },
         { match: ["experience", "background", "career"],              scroll: "#experience" },
         { match: ["skills", "tech stack", "tooling", "technologies"], scroll: "#skills" },
@@ -289,10 +289,11 @@ const suggestions = [
       };
 
       // Router — scrolls allow short phrases; external opens require an explicit nav verb
-      const NAV_PREFIX = /^(open|go to|show me|take me to|scroll to|navigate to|navigate|download|launch)\b/;
+      // No ^ anchor — speech often prepends "can you", "please", etc. before the verb
+      const NAV_VERB = /\b(open|go to|show me|take me to|scroll to|navigate to|navigate|download|launch)\b/;
       const route = (transcript) => {
         const t = transcript.toLowerCase().replace(/[.,!?]+$/, "").trim();
-        const hasNavVerb = NAV_PREFIX.test(t);
+        const hasNavVerb = NAV_VERB.test(t);
         const isShort = t.split(" ").length <= 3;
         const hit = COMMANDS.find(c => c.match.some(m => t.includes(m)));
         if (!hit) return false;
