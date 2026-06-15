@@ -260,19 +260,23 @@ const suggestions = [
     if (!Rec) {
       mic && (mic.style.display = "none");
     } else {
-      // Navigation command map — phrases → actions
+      // Navigation command map
+      // scroll: short phrases OK | open: requires explicit nav verb (prevents accidental tab opens)
       const scrollTo = (id) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
       const COMMANDS = [
-        { match: ["projects", "your work", "show me work", "work"],      action: () => scrollTo("#projects") },
-        { match: ["about", "who are you", "who is divish"],              action: () => scrollTo("#about") },
-        { match: ["experience", "background", "career"],                 action: () => scrollTo("#experience") },
-        { match: ["skills", "tech stack", "tooling", "technologies"],    action: () => scrollTo("#skills") },
-        { match: ["contact", "get in touch", "hire", "email"],           action: () => scrollTo("#contact") },
-        { match: ["resume", "cv", "download cv", "download resume"],     action: () => { window.location.href = "/Divish-Raj-O-Resume.pdf"; } },
-        { match: ["eduflow", "lms", "learning"],                         action: () => window.open("https://eduflow-house.vercel.app/", "_blank", "noopener") },
-        { match: ["resume ai", "resumeai", "job applier", "auto apply"], action: () => window.open("https://auto-applier-job.vercel.app/", "_blank", "noopener") },
-        { match: ["nakshatra", "events", "wedding"],                     action: () => window.open("https://nakshatraevents.vercel.app/", "_blank", "noopener") },
-        { match: ["peace haven", "task manager", "tasks"],               action: () => window.open("https://tmpeaceheaven.netlify.app/login", "_blank", "noopener") },
+        // Scrolls — triggered by short phrase or nav verb
+        { match: ["projects", "your work", "show me work", "work"],   scroll: "#projects" },
+        { match: ["about", "who are you", "who is divish"],           scroll: "#about" },
+        { match: ["experience", "background", "career"],              scroll: "#experience" },
+        { match: ["skills", "tech stack", "tooling", "technologies"], scroll: "#skills" },
+        { match: ["contact", "get in touch", "hire", "email"],        scroll: "#contact" },
+        // External opens — require explicit nav verb only (no short-phrase shortcut)
+        // ResumeAI MUST come before resume/cv so "resumeai" doesn't match the PDF entry
+        { match: ["resume ai", "resumeai", "job applier", "auto apply"], open: "https://auto-applier-job.vercel.app/" },
+        { match: ["resume", "cv", "download"],                           open: "/Divish-Raj-O-Resume.pdf" },
+        { match: ["eduflow"],                                            open: "https://eduflow-house.vercel.app/" },
+        { match: ["nakshatra", "wedding"],                               open: "https://nakshatraevents.vercel.app/" },
+        { match: ["peace haven", "task manager"],                        open: "https://tmpeaceheaven.netlify.app/login" },
       ];
 
       // Toast confirmation
@@ -284,13 +288,22 @@ const suggestions = [
         setTimeout(() => { t.style.opacity = "0"; setTimeout(() => t.remove(), 300); }, 2200);
       };
 
-      // Router — nav intent or short phrase → command; otherwise fall through to chat
+      // Router — scrolls allow short phrases; external opens require an explicit nav verb
       const NAV_PREFIX = /^(open|go to|show me|take me to|scroll to|navigate to|navigate|download|launch)\b/;
       const route = (transcript) => {
         const t = transcript.toLowerCase().replace(/[.,!?]+$/, "").trim();
-        const isNav = NAV_PREFIX.test(t) || t.split(" ").length <= 3;
+        const hasNavVerb = NAV_PREFIX.test(t);
+        const isShort = t.split(" ").length <= 3;
         const hit = COMMANDS.find(c => c.match.some(m => t.includes(m)));
-        if (hit && isNav) { hit.action(); toast("→ " + t); return true; }
+        if (!hit) return false;
+        if (hit.scroll && (hasNavVerb || isShort)) {
+          scrollTo(hit.scroll); toast("→ " + t); return true;
+        }
+        if (hit.open && hasNavVerb) {
+          if (hit.open.startsWith("/")) window.location.href = hit.open;
+          else window.open(hit.open, "_blank", "noopener");
+          toast("→ " + t); return true;
+        }
         return false;
       };
 
