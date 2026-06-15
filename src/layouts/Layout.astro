@@ -219,24 +219,39 @@ const websiteSchema = {
       addEventListener("scroll", onScroll, { passive: true });
       onScroll();
 
-      // 4) typewriter effect: trigger after page fully loads so users see the animation
-      const startTypewriter = () => {
-        const name = document.getElementById("hero-name");
-        const tagline = document.getElementById("hero-tagline");
-        const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // 4) typewriter — character-by-character, left to right, no overflow:hidden
+      const typewrite = (el, text, speed, onDone) => {
+        el.textContent = "";
+        const cursor = document.createElement("span");
+        cursor.className = "tw-cursor";
+        el.parentNode.insertBefore(cursor, el.nextSibling);
+        let i = 0;
+        const tick = () => {
+          if (i < text.length) {
+            el.textContent += text[i++];
+            setTimeout(tick, speed);
+          } else {
+            if (onDone) onDone(cursor);
+          }
+        };
+        tick();
+      };
 
-        if (!reduce) {
-          if (name) {
-            setTimeout(() => name.classList.add("typewriter"), 300);
-          }
-          if (tagline) {
-            setTimeout(() => tagline.classList.add("typewriter"), 1200);
-          }
-        }
+      const startTypewriter = () => {
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        const name = document.getElementById("hero-name");
+        if (!name) return;
+        const nameText = name.textContent;
+        // wait for reveal animation to settle, then start typing
+        setTimeout(() => {
+          typewrite(name, nameText, 80, (cursor) => {
+            // blink cursor for 1.5s then remove it
+            setTimeout(() => cursor.remove(), 1500);
+          });
+        }, 600);
       };
 
       addEventListener("load", startTypewriter, { once: true });
-      // fallback: if load fires before this script, call manually
       if (document.readyState === "complete") startTypewriter();
     </script>
 

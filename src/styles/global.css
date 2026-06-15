@@ -230,29 +230,24 @@ p { text-wrap: pretty; }
   .pop.is-visible { opacity: 1; transform: none; }
 }
 
-/* ── Typewriter effect ────────────────────────────────── */
-@keyframes typewrite {
-  from { width: 0; }
-  to { width: 100%; }
-}
+/* ── Typewriter cursor ─────────────────────────────────── */
 @keyframes blink {
-  0%, 49% { border-right-color: var(--color-aurora); }
-  50%, 100% { border-right-color: transparent; }
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }
-.typewriter {
-  overflow: hidden;
-  animation: typewrite 2.8s steps(40, end) forwards;
-}
-/* cursor only on short hero name, not on paragraph tagline */
-#hero-name.typewriter {
+.tw-cursor {
   display: inline-block;
-  border-right: 2px solid var(--color-aurora);
-  animation: typewrite 2.8s steps(40, end) forwards, blink 0.7s infinite;
+  width: 2px;
+  height: 0.85em;
+  background: var(--color-aurora);
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 0.7s infinite;
+  box-shadow: 0 0 8px oklch(0.8 0.165 162 / 0.8);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .typewriter { animation: none; }
-  #hero-name.typewriter { border-right: none; }
+  .tw-cursor { animation: none; }
   .ticker-track { animation: none; }
   html { scroll-behavior: auto; }
 }
