@@ -47,6 +47,10 @@ import SpiralScene from "./SpiralScene.astro";
     <div class="reveal mt-9 flex flex-wrap items-center gap-3" style="--d:420ms">
       <a href="#projects" class="btn-aurora px-7 py-3.5 text-sm">View projects</a>
       <a href="#contact" class="btn-ghost px-7 py-3.5 text-sm">Contact me</a>
+      <button id="tour-trigger" onclick="window.startPortfolioTour?.()" class="flex items-center gap-1.5 rounded-full border border-[oklch(0.32_0.02_160/0.5)] px-4 py-2.5 text-xs font-medium text-[var(--color-muted)] transition-colors hover:border-[oklch(0.8_0.165_162/0.6)] hover:text-[var(--color-aurora)]">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Take the tour
+      </button>
       <span class="mx-1 hidden h-6 w-px bg-[oklch(0.32_0.02_160/0.6)] sm:block"></span>
       <div class="flex items-center gap-2">
         <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer" class="icon-orb" aria-label="LinkedIn profile">
