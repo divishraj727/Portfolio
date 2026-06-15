@@ -253,13 +253,47 @@ const suggestions = [
       if (t?.classList?.contains("chat-suggest")) send(t.textContent.trim());
     });
 
-    // Voice input
+    // Voice navigation + chat
     const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
     const mic = document.getElementById("chat-mic");
     const micPing = document.getElementById("mic-ping");
     if (!Rec) {
       mic && (mic.style.display = "none");
     } else {
+      // Navigation command map — phrases → actions
+      const scrollTo = (id) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const COMMANDS = [
+        { match: ["projects", "your work", "show me work", "work"],      action: () => scrollTo("#projects") },
+        { match: ["about", "who are you", "who is divish"],              action: () => scrollTo("#about") },
+        { match: ["experience", "background", "career"],                 action: () => scrollTo("#experience") },
+        { match: ["skills", "tech stack", "tooling", "technologies"],    action: () => scrollTo("#skills") },
+        { match: ["contact", "get in touch", "hire", "email"],           action: () => scrollTo("#contact") },
+        { match: ["resume", "cv", "download cv", "download resume"],     action: () => { window.location.href = "/Divish-Raj-O-Resume.pdf"; } },
+        { match: ["eduflow", "lms", "learning"],                         action: () => window.open("https://eduflow-house.vercel.app/", "_blank", "noopener") },
+        { match: ["resume ai", "resumeai", "job applier", "auto apply"], action: () => window.open("https://auto-applier-job.vercel.app/", "_blank", "noopener") },
+        { match: ["nakshatra", "events", "wedding"],                     action: () => window.open("https://nakshatraevents.vercel.app/", "_blank", "noopener") },
+        { match: ["peace haven", "task manager", "tasks"],               action: () => window.open("https://tmpeaceheaven.netlify.app/login", "_blank", "noopener") },
+      ];
+
+      // Toast confirmation
+      const toast = (msg) => {
+        const t = document.createElement("div");
+        t.textContent = msg;
+        t.style.cssText = "position:fixed;bottom:88px;right:20px;z-index:9999;background:var(--color-surface);border:1px solid oklch(0.8 0.165 162/0.5);color:var(--color-aurora);font-size:0.75rem;font-family:var(--font-sans,sans-serif);padding:8px 14px;border-radius:999px;box-shadow:0 0 16px oklch(0.8 0.165 162/0.25);pointer-events:none;transition:opacity 0.3s";
+        document.body.appendChild(t);
+        setTimeout(() => { t.style.opacity = "0"; setTimeout(() => t.remove(), 300); }, 2200);
+      };
+
+      // Router — nav intent or short phrase → command; otherwise fall through to chat
+      const NAV_PREFIX = /^(open|go to|show me|take me to|scroll to|navigate to|navigate|download|launch)\b/;
+      const route = (transcript) => {
+        const t = transcript.toLowerCase().replace(/[.,!?]+$/, "").trim();
+        const isNav = NAV_PREFIX.test(t) || t.split(" ").length <= 3;
+        const hit = COMMANDS.find(c => c.match.some(m => t.includes(m)));
+        if (hit && isNav) { hit.action(); toast("→ " + t); return true; }
+        return false;
+      };
+
       const rec = new Rec();
       rec.lang = "en-IN";
       rec.interimResults = true;
@@ -271,9 +305,16 @@ const suggestions = [
         listening = false;
         micPing.classList.add("hidden");
         mic.style.color = "";
+        // Auto-send whatever's in the input if routing didn't handle it
         if (input.value.trim()) { const v = input.value.trim(); input.value = ""; send(v); }
       };
-      rec.onresult = (e) => { input.value = Array.from(e.results).map(r => r[0].transcript).join(""); };
+      rec.onresult = (e) => {
+        const last = e.results[e.results.length - 1];
+        if (!last.isFinal) { input.value = last[0].transcript; return; }
+        const said = last[0].transcript;
+        if (route(said)) { input.value = ""; rec.stop(); }
+        else { input.value = said; }
+      };
       rec.onerror = () => { listening = false; micPing.classList.add("hidden"); mic.style.color = ""; };
     }
   })();
