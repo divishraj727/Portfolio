@@ -2,9 +2,10 @@
 import { SITE } from "../config";
 ---
 
-<section id="about" class="mx-auto max-w-6xl px-6 py-[clamp(4rem,10vh,8rem)]">
-  <div class="grid gap-12 md:grid-cols-[1fr_280px] md:gap-16">
-    <div class="max-w-[60ch]">
+<section id="about" class="mx-auto max-w-5xl px-6 sm:px-10 py-[clamp(4rem,10vh,8rem)]">
+  <div class="grid gap-10 lg:grid-cols-[1fr_240px] lg:gap-16 xl:grid-cols-[1fr_260px]">
+    <!-- Text column -->
+    <div>
       <p class="kicker reveal mb-5">About</p>
       <h2 class="section-title reveal">
         Full stack, all the way to the <span class="text-[var(--color-aurora)]">cloud</span>
@@ -34,8 +35,9 @@ import { SITE } from "../config";
       </div>
     </div>
 
-    <aside class="reveal md:pt-24" style="--d:200ms">
-      <div class="relative mx-auto w-56 md:w-full">
+    <!-- Photo sidebar — only visible on lg+ -->
+    <aside class="reveal hidden lg:block lg:pt-20" style="--d:200ms">
+      <div class="relative">
         <div class="absolute -inset-3 rounded-3xl bg-[oklch(0.55_0.12_162/0.25)] blur-2xl" aria-hidden="true"></div>
         <img
           src={SITE.photo}
@@ -45,7 +47,7 @@ import { SITE } from "../config";
           loading="lazy"
           class="relative aspect-square w-full rounded-3xl border border-[oklch(0.8_0.165_162/0.35)] object-cover"
         />
-        <div class="hud mt-4 space-y-1.5 text-center md:text-left">
+        <div class="hud mt-4 space-y-1.5">
           <p>RHCE · EX294 // CISCO CCNA</p>
           <p>M.TECH RVCE · BANGALORE</p>
         </div>
