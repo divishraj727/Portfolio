@@ -48,9 +48,12 @@ export const POST: APIRoute = async ({ request }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        // llama-3.3-70b-versatile was retired by Groq on 2026-08-16.
+        model: "openai/gpt-oss-120b",
+        reasoning_effort: "low",
+        include_reasoning: false,
         temperature: 0.4,
-        max_tokens: 400,
+        max_tokens: 800,
         stream: true,
         messages: [{ role: "system", content: PERSONA }, ...trimmed],
       }),
