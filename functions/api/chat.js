@@ -36,7 +36,8 @@ export async function onRequestPost({ request, env }) {
       ? "https://api.openai.com/v1/chat/completions"
       : "https://api.groq.com/openai/v1/chat/completions";
     const apiKey = useOpenAI ? env.OPENAI_API_KEY : env.GROQ_API_KEY;
-    const model = useOpenAI ? "gpt-4o-mini" : "llama-3.3-70b-versatile";
+    // llama-3.3-70b-versatile was retired by Groq on 2026-08-16.
+    const model = useOpenAI ? "gpt-4o-mini" : "openai/gpt-oss-120b";
 
     if (!apiKey) {
       return json({ error: "No API key configured (set GROQ_API_KEY)." }, 500);
@@ -50,8 +51,9 @@ export async function onRequestPost({ request, env }) {
       },
       body: JSON.stringify({
         model,
+        ...(useOpenAI ? {} : { reasoning_effort: "low", include_reasoning: false }),
         temperature: 0.4,
-        max_tokens: 300,
+        max_tokens: useOpenAI ? 300 : 800,
         messages: [{ role: "system", content: PERSONA }, ...trimmed],
       }),
     });
